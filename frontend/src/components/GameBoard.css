@@ -1,0 +1,37 @@
+
+.wall-cell {
+  position: relative;
+  background-color: #77766d;
+
+  background-image:
+    linear-gradient(
+      180deg,
+      #ffffff35 0%,
+      transparent 25%,
+      #00000030 100%
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      transparent 24px,
+      #34372f 25px,
+      #34372f 28px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      #a4a396 0px,
+      #a4a396 36px,
+      #45473f 37px,
+      #45473f 41px
+    );
+
+  border: 2px solid #45473f;
+  border-radius: 3px;
+
+  box-shadow:
+    inset 3px 3px 0 #ffffff30,
+    inset -4px -4px 0 #00000035,
+    0 3px 0 #34372f;
+
+  transform: scale(1);
+}
