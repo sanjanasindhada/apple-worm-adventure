@@ -13,15 +13,19 @@ function GameControls({
     setAppleCollected,
     appleCollected,
     setLevelComplete,
-    obstacles = []
+    obstacles = [],
+    setWormSize,
+    goToNextLevel,
+    initialApple
 }) {
     const restartGame = () => {
         setWorm(initialWorm);
-        setApple({ x: 4, y: 4 });
+        setApple(initialApple);
         setScore(0);
         setGameOver(false);
         setAppleCollected(false);
         setLevelComplete(false);
+        setWormSize(1);
     };
 
     const generateApple = (currentWorm) => {
@@ -31,7 +35,11 @@ function GameControls({
                 const occupied = currentWorm.some((part) =>
                     part.x === x && part.y === y
                 );
-                if (!occupied) {
+                const occupiedObstacles = obstacles.some((obstacle) =>
+                    obstacle.x === x && obstacle.y === y);
+                const occupiedPortal = x === 6 && y === 6;
+
+                if (!occupied && !occupiedObstacles && !occupiedPortal) {
                     emptyCells.push({ x, y });
                 }
             }
@@ -93,6 +101,7 @@ function GameControls({
             newWorm.pop();
         } else {
             setScore(score + 1);
+            setWormSize((size) => Math.min(size + 0.1, 2));
             setAppleCollected(true)
             const nextApple = generateApple(newWorm);
             if (nextApple === null) {
@@ -105,11 +114,13 @@ function GameControls({
         const reachedPortal =
             newHead.x === 6 && newHead.y === 6;
         if (reachedPortal && appleCollected) {
-            setLevelComplete(true);
-            setGameOver(true);
-            return
+            // setLevelComplete(true);
+            // setGameOver(true);
+            goToNextLevel();
+            return;
         }
         setWorm(newWorm);
+        console.log("Worm length:", newWorm.length);
     };
     useEffect(() => {
         const handleKeyDown = (event) => {

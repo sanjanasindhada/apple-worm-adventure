@@ -1,37 +1,41 @@
+.game-board {
+  display: grid;
+  grid-template-columns: repeat(8, 40px);
+  grid-template-rows: repeat(8, 40px);
+  gap: 0;
+  background: transparent;
+  border: none;
+}
+.worm-circle {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: #72cf45;
+    border: 1px solid #286d27;
+    border-radius: 50%;
+    box-sizing: border-box;
+}
+.cell {
+    padding: 0;
+    margin: 0;
+    border: none;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+.empty-cell {
+  background: transparent;
+  border: none;
+}
 
 .wall-cell {
-  position: relative;
-  background-color: #77766d;
-
-  background-image:
-    linear-gradient(
-      180deg,
-      #ffffff35 0%,
-      transparent 25%,
-      #00000030 100%
-    ),
-    repeating-linear-gradient(
-      0deg,
-      transparent 0px,
-      transparent 24px,
-      #34372f 25px,
-      #34372f 28px
-    ),
-    repeating-linear-gradient(
-      90deg,
-      #a4a396 0px,
-      #a4a396 36px,
-      #45473f 37px,
-      #45473f 41px
-    );
-
-  border: 2px solid #45473f;
-  border-radius: 3px;
-
-  box-shadow:
-    inset 3px 3px 0 #ffffff30,
-    inset -4px -4px 0 #00000035,
-    0 3px 0 #34372f;
-
-  transform: scale(1);
+  background: linear-gradient(
+    to bottom,
+    #a96b3c,
+    #75401f
+  );
+  border: none;
+  box-shadow: inset 0 3px 0 #bd895c;
 }

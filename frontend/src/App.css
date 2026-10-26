@@ -72,15 +72,13 @@ body {
   grid-template-rows: repeat(8, minmax(0, 1fr));
   width: min(88vw, 440px);
   aspect-ratio: 1;
-  padding: 7px;
-  background: #65432c;
-  border: 5px solid #b9ec64;
-  border-radius: 18px;
-  overflow: hidden;
-  box-shadow:
-    0 8px 0 #3d702e,
-    0 14px 24px #285b3855,
-    inset 0 0 0 3px #e1ff9b;
+  padding: 0;
+  gap: 0;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  overflow: visible;
+  box-shadow: none;
 }
 
 .cell {
@@ -90,14 +88,10 @@ body {
   align-items: center;
   justify-content: center;
   font-size: clamp(18px, 4.5vw, 30px);
-  background: linear-gradient(145deg, #a8e65b, #80c944);
-  border: 1px solid #70b638;
-  border-radius: 5px;
-  transition: background 0.15s ease;
-}
-
-.cell:nth-child(odd) {
-  background: linear-gradient(145deg, #9bdf50, #76bd3d);
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .controls {
@@ -170,4 +164,74 @@ body {
   .game-container h3 {
     font-size: 15px;
   }
+}
+
+.game-layout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+}
+
+.side-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.controls {
+  margin: 0;
+}
+
+@media (max-width: 600px) {
+  .game-layout {
+    gap: 10px;
+  }
+
+  .game-board {
+    width: min(68vw, 380px);
+  }
+
+  .controls button {
+    min-width: 38px;
+    min-height: 38px;
+    padding: 6px;
+    font-size: 16px;
+  }
+}
+
+.level-prompt {
+  text-align: center;
+  margin: 20px auto;
+  padding: 25px;
+  max-width: 500px;
+  background: rgba(10, 35, 24, 0.92);
+  border: 2px solid #f5d76e;
+  border-radius: 20px;
+  color: white;
+}
+
+.level-prompt h2 {
+  color: #f5d76e;
+  font-size: 30px;
+  margin-bottom: 10px;
+}
+
+.big-play-btn {
+  display: block;
+  margin: 20px auto 0;
+  padding: 18px 40px;
+  font-size: 24px;
+  font-weight: bold;
+  color: #17351f;
+  background: linear-gradient(135deg, #ffe985, #ffb52e);
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  box-shadow: 0 6px 0 #b87916;
+  transition: transform 0.2s;
+}
+
+.big-play-btn:hover {
+  transform: scale(1.06);
 }
