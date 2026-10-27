@@ -1,0 +1,65 @@
+
+.level-screen {
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding: 30px 20px;
+  text-align: center;
+  background: linear-gradient(#173d2b, #071b13);
+  color: white;
+}
+
+.level-screen h1 {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  color: #b8f56b;
+  text-shadow: 2px 3px 5px #000;
+}
+
+.level-screen p {
+  color: #e1f5d0;
+}
+
+.back-button {
+  display: block;
+  padding: 10px 18px;
+  border: 2px solid #b8f56b;
+  border-radius: 10px;
+  background: #244d32;
+  color: white;
+  cursor: pointer;
+}
+
+.level-grid {
+  max-width: 700px;
+  margin: 30px auto;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.level-button {
+  aspect-ratio: 1;
+  border-radius: 15px;
+  font-size: 1.4rem;
+  font-weight: bold;
+  border: 3px solid #8dbb64;
+}
+
+.level-button.unlocked {
+  background: linear-gradient(#a6f65b, #438c25);
+  color: #15340f;
+  cursor: pointer;
+}
+
+.level-button.locked {
+  background: #34463b;
+  color: #bdc9bf;
+  border-color: #536558;
+  cursor: not-allowed;
+}
+
+@media (max-width: 450px) {
+  .level-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+  }
+}

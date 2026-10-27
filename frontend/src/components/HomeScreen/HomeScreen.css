@@ -1,0 +1,32 @@
+.home-screen {
+    min-height: 100vh;
+    width: 100%;
+    background-image: url("/public/home-bg.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.play-button {
+    position: absolute;
+    top: 73%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 280px;
+    height: 100px;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    color: aliceblue;
+    font-size: 50px;
+    z-index: 10;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}

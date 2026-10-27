@@ -58,17 +58,19 @@ function GameBoard({ worm, apple, portal = { x: 6, y: 6 }, obstacles = [], apple
                     >
                         {isHead
                             ? "🐛"
-                        : isWorm
-                        ? <span className="worm-circle"></span>
-                        : isApple
-                        ? "🍎"
-                        : isObstacle
-                        ? ""
-                        : isPortal
-                        ? appleCollected
-                        ? "✨" :
-                        "🌀"
-                        : ""
+                            : isWorm
+                                ? <span className="worm-circle"></span>
+                                : isApple
+                                    ? "🍎"
+                                    : isObstacle
+                                        ? ""
+                                        : isPortal
+                                            ? (
+                                                <div className={`${appleCollected ? "portal-active" : ""}`}>
+                                                    🌀
+                                                </div>
+                                            )
+                                            : ""
                         }
                     </div>
                 );
