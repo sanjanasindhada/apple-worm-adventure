@@ -1,5 +1,6 @@
 import { useEffect, useCallback } from "react";
 import { playSound } from "../utils/playSounds";
+
 function GameControls({
     setWorm,
     setScore,
@@ -19,9 +20,8 @@ function GameControls({
     initialApple,
     setPortalEntering,
     portal = { x: 6, y: 6 },
-    // movesLeft,
-    // setMovesLeft
 }) {
+    // Restart game
     const restartGame = () => {
         setWorm(initialWorm);
         setApple(initialApple);
@@ -33,108 +33,174 @@ function GameControls({
         setWormSize(1);
     };
 
-    const generateApple = (currentWorm) => {
-        const emptyCells = [];
-        for (let y = 0; y < 8; y++) {
-            for (let x = 0; x < 8; x++) {
-                const occupied = currentWorm.some((part) =>
-                    part.x === x && part.y === y
-                );
-                const occupiedObstacles = obstacles.some((obstacle) =>
-                    obstacle.x === x && obstacle.y === y);
-                const occupiedPortal =
-                    x === portal.x && y === portal.y;
-                if (!occupied && !occupiedObstacles && !occupiedPortal) {
-                    emptyCells.push({ x, y });
+    // Generate apple in an empty cell
+    const generateApple = useCallback(
+        (currentWorm) => {
+            const emptyCells = [];
+
+            for (let y = 0; y < 8; y++) {
+                for (let x = 0; x < 8; x++) {
+                    const occupied = currentWorm.some(
+                        (part) => part.x === x && part.y === y
+                    );
+
+                    const occupiedObstacles = obstacles.some(
+                        (obstacle) =>
+                            obstacle.x === x && obstacle.y === y
+                    );
+
+                    const occupiedPortal =
+                        x === portal.x && y === portal.y;
+
+                    if (
+                        !occupied &&
+                        !occupiedObstacles &&
+                        !occupiedPortal
+                    ) {
+                        emptyCells.push({ x, y });
+                    }
                 }
             }
-        }
-        if (emptyCells.length === 0) {
-            return null;
-        }
-        const randomIndex = Math.floor(
-            Math.random() * emptyCells.length
-        );
-        return emptyCells[randomIndex];
-    };
 
-    const moveWorm = useCallback((dx, dy) => {
-        if (gameOver) {
-            return;
-        }
-        const head = worm[0];
-
-        const newHead = {
-            x: head.x + dx,
-            y: head.y + dy,
-        };
-
-        if (
-            newHead.x < 0 ||
-            newHead.x >= 8 ||
-            newHead.y < 0 ||
-            newHead.y >= 8
-        ) {
-            return;
-        }
-        //hit the obstacles
-        const hitobstacles = obstacles.some((obstacle) =>
-            obstacle.x === newHead.x && obstacle.y === newHead.y
-        );
-        if (hitobstacles) {
-            return;
-        }
-
-        //hit self
-        const himself = worm.some(
-            (part) =>
-                part.x === newHead.x &&
-                part.y === newHead.y
-        )
-
-        if (himself) {
-            setGameOver(true);
-            return;
-        }
-        const ateApple =
-            newHead.x === apple.x &&
-            newHead.y === apple.y;
-
-        const newWorm = [newHead, ...worm];
-
-        if (!ateApple) {
-            newWorm.pop();
-        } else {
-            setScore(score + 1);
-            playSound("pop");
-            setWormSize((size) => Math.min(size + 0.1, 2));
-            setAppleCollected(true)
-            const nextApple = generateApple(newWorm);
-            if (nextApple === null) {
-                setGameOver(true)
+            if (emptyCells.length === 0) {
+                return null;
             }
-            else {
-                setApple(nextApple);
+
+            const randomIndex = Math.floor(
+                Math.random() * emptyCells.length
+            );
+
+            return emptyCells[randomIndex];
+        },
+        [obstacles, portal]
+    );
+
+    // Move worm
+    const moveWorm = useCallback(
+        (dx, dy) => {
+            if (gameOver || !worm || worm.length === 0) {
+                return;
             }
-        }
-        const reachedPortal =
-            newHead.x === portal.x && newHead.y === portal.y;
-        if (reachedPortal && appleCollected) {
+
+            const head = worm[0];
+
+            const newHead = {
+                x: head.x + dx,
+                y: head.y + dy,
+            };
+
+            // Stop at board boundaries
+            if (
+                newHead.x < 0 ||
+                newHead.x >= 8 ||
+                newHead.y < 0 ||
+                newHead.y >= 8
+            ) {
+                return;
+            }
+
+            // Stop at obstacles
+            const hitObstacles = obstacles.some(
+                (obstacle) =>
+                    obstacle.x === newHead.x &&
+                    obstacle.y === newHead.y
+            );
+
+            if (hitObstacles) {
+                return;
+            }
+
+            // Check collision with worm itself
+            const hitSelf = worm.some(
+                (part) =>
+                    part.x === newHead.x &&
+                    part.y === newHead.y
+            );
+
+            if (hitSelf) {
+                setGameOver(true);
+                return;
+            }
+
+            // Check whether apple is collected
+            const ateApple =
+                apple &&
+                newHead.x === apple.x &&
+                newHead.y === apple.y;
+
+            const newWorm = [newHead, ...worm];
+
+            if (!ateApple) {
+                newWorm.pop();
+            } else {
+                setScore(score + 1);
+                playSound("pop");
+                setWormSize((size) => Math.min(size + 0.1, 2));
+                setAppleCollected(true);
+
+                const nextApple = generateApple(newWorm);
+
+                if (nextApple === null) {
+                    setGameOver(true);
+                } else {
+                    setApple(nextApple);
+                }
+            }
+
+            // Check portal
+            const reachedPortal =
+                newHead.x === portal.x &&
+                newHead.y === portal.y;
+
+            if (reachedPortal && appleCollected) {
+                setWorm(newWorm);
+                setPortalEntering(true);
+                playSound("portal");
+
+                setTimeout(() => {
+                    goToNextLevel();
+                    setPortalEntering(false);
+                }, 1000);
+
+                return;
+            }
+
             setWorm(newWorm);
-            setPortalEntering(true);
-            playSound("portal");
-            setTimeout(() => {
-                goToNextLevel();
-                setPortalEntering(false);
-            }, 1000);
+        },
+        [
+            gameOver,
+            worm,
+            apple,
+            score,
+            obstacles,
+            portal,
+            appleCollected,
+            generateApple,
+            goToNextLevel,
+            setGameOver,
+            setScore,
+            setWorm,
+            setApple,
+            setAppleCollected,
+            setWormSize,
+            setPortalEntering,
+        ]
+    );
 
-            return;
-        }
-        setWorm(newWorm);
-        console.log("Worm length:", newWorm.length);
-    });
+    // Keyboard controls
     useEffect(() => {
         const handleKeyDown = (event) => {
+            if (
+                [
+                    "ArrowUp",
+                    "ArrowDown",
+                    "ArrowLeft",
+                    "ArrowRight",
+                ].includes(event.key)
+            ) {
+                event.preventDefault();
+            }
+
             if (event.key === "ArrowUp") {
                 moveWorm(0, -1);
             } else if (event.key === "ArrowDown") {
@@ -152,6 +218,7 @@ function GameControls({
             window.removeEventListener("keydown", handleKeyDown);
         };
     }, [moveWorm]);
+
     return (
         <>
             <div className="controls">
