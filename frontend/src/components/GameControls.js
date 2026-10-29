@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { playSound } from "../utils/playSounds";
 function GameControls({
     setWorm,
@@ -58,7 +58,7 @@ function GameControls({
         return emptyCells[randomIndex];
     };
 
-    const moveWorm = (dx, dy) => {
+    const moveWorm = useCallback((dx, dy) => {
         if (gameOver) {
             return;
         }
@@ -132,28 +132,26 @@ function GameControls({
         }
         setWorm(newWorm);
         console.log("Worm length:", newWorm.length);
-    };
+    });
     useEffect(() => {
         const handleKeyDown = (event) => {
             if (event.key === "ArrowUp") {
                 moveWorm(0, -1);
-            }
-            else if (event.key === "ArrowDown") {
+            } else if (event.key === "ArrowDown") {
                 moveWorm(0, 1);
-            }
-            else if (event.key === "ArrowLeft") {
+            } else if (event.key === "ArrowLeft") {
                 moveWorm(-1, 0);
-            }
-            else if (event.key === "ArrowRight") {
+            } else if (event.key === "ArrowRight") {
                 moveWorm(1, 0);
             }
-        }
+        };
+
         window.addEventListener("keydown", handleKeyDown);
 
         return () => {
             window.removeEventListener("keydown", handleKeyDown);
         };
-    }, [worm, apple, gameOver, appleCollected, portal]);
+    }, [moveWorm]);
     return (
         <>
             <div className="controls">

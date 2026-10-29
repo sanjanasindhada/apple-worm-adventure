@@ -6,6 +6,7 @@ import levels from './data/Levels';
 import HomeScreen from './components/HomeScreen/HomeScreen';
 import LevelSelection from './components/LevelSelection/LevelSelection';
 import { useState, useEffect, useRef } from 'react';
+
 function App() {
   const bgMusicRef = useRef(null);
 
@@ -29,9 +30,11 @@ function App() {
       }
     };
   }, []);
+
   const [currentLevel, setCurrentLevel] = useState(0);
   const levelData = levels[currentLevel];
   const initialWorm = [levelData.start];
+
   const [worm, setWorm] = useState(initialWorm);
   const [apple, setApple] = useState(levelData.apple);
   const [score, setScore] = useState(0);
@@ -43,6 +46,7 @@ function App() {
   const [screen, setScreen] = useState("home");
   const [movesLeft, setMovesLeft] = useState(null);
   const [portalEntering, setPortalEntering] = useState(false);
+
   const selectLevel = (index) => {
     const selectedLevel = levels[index];
 
@@ -55,33 +59,12 @@ function App() {
     setLevelComplete(false);
     setShowNextLevelPrompt(false);
     setWormSize(1);
+    setMovesLeft(null);
+    setPortalEntering(false);
 
     setScreen("game");
   };
 
-  {
-    screen === "levels" && (
-      <LevelSelection
-        levels={levels}
-        onBack={() => setScreen("home")}
-        onSelectLevel={(index) => {
-          const selectedLevel = levels[index];
-
-          setCurrentLevel(index);
-          setWorm([selectedLevel.start]);
-          setApple(selectedLevel.apple);
-          setScore(0);
-          setGameOver(false);
-          setAppleCollected(false);
-          setLevelComplete(false);
-          setShowNextLevelPrompt(false);
-          setWormSize(1);
-
-          setScreen("game");
-        }}
-      />
-    )
-  }
   const goToNextLevel = () => {
     if (currentLevel < levels.length - 1) {
       playSound("win");
@@ -90,6 +73,7 @@ function App() {
       setGameOver(true);
     }
   };
+
   const playNextLevel = () => {
     const nextLevel = currentLevel + 1;
     const nextLevelData = levels[nextLevel];
@@ -103,7 +87,10 @@ function App() {
     setShowNextLevelPrompt(false);
     setGameOver(false);
     setWormSize(1);
+    setMovesLeft(null);
+    setPortalEntering(false);
   };
+
   return (
     <>
       {screen === "home" && (
@@ -114,6 +101,7 @@ function App() {
           }}
         />
       )}
+
       {screen === "levels" && (
         <LevelSelection
           levels={levels}
@@ -121,6 +109,7 @@ function App() {
           onSelectLevel={selectLevel}
         />
       )}
+
       {screen === "game" && (
         <div className="game-container">
           <h1>🍎 Apple Worm Adventure</h1>
@@ -128,10 +117,11 @@ function App() {
           <p>Collect apples and grow your worm!</p>
 
           <h3>Level {levelData.level} | Score: {score}</h3>
+
           {gameOver && (
             <h2>Game Over! Try Again 🎮</h2>
           )}
-          {/* {levelComplete && <h2>🎉 Level Complete!</h2>} */}
+
           {showNextLevelPrompt && (
             <div className="level-prompt">
               <h2>🎉 Level Complete!</h2>
@@ -145,6 +135,7 @@ function App() {
               </button>
             </div>
           )}
+
           {!showNextLevelPrompt && (
             <div className="game-layout">
               <GameBoard
@@ -189,7 +180,6 @@ function App() {
       )}
     </>
   );
-
 }
 
 export default App;

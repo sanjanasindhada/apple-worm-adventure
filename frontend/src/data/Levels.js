@@ -96,18 +96,6 @@ const portalPositions = [
     { x: 0, y: 4 },
     { x: 4, y: 7 },
 ];
-const applePositions = [
-    { x: 4, y: 4 },
-    { x: 5, y: 2 },
-    { x: 2, y: 4 },
-    { x: 6, y: 2 },
-    { x: 4, y: 6 },
-    { x: 1, y: 5 },
-    { x: 5, y: 5 },
-    { x: 2, y: 6 },
-    { x: 6, y: 4 },
-    { x: 3, y: 6 },
-];
 
 const levels = Array.from({ length: 50 }, (_, index) => {
     const levelNumber = index + 1;
