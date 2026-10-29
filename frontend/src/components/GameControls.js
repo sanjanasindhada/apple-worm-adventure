@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import levels from "../data/Levels";
+import { playSound } from "../utils/playSounds";
 function GameControls({
     setWorm,
     setScore,
@@ -16,7 +16,11 @@ function GameControls({
     obstacles = [],
     setWormSize,
     goToNextLevel,
-    initialApple
+    initialApple,
+    setPortalEntering,
+    portal = { x: 6, y: 6 },
+    // movesLeft,
+    // setMovesLeft
 }) {
     const restartGame = () => {
         setWorm(initialWorm);
@@ -25,6 +29,7 @@ function GameControls({
         setGameOver(false);
         setAppleCollected(false);
         setLevelComplete(false);
+        setPortalEntering(false);
         setWormSize(1);
     };
 
@@ -37,8 +42,8 @@ function GameControls({
                 );
                 const occupiedObstacles = obstacles.some((obstacle) =>
                     obstacle.x === x && obstacle.y === y);
-                const occupiedPortal = x === 6 && y === 6;
-
+                const occupiedPortal =
+                    x === portal.x && y === portal.y;
                 if (!occupied && !occupiedObstacles && !occupiedPortal) {
                     emptyCells.push({ x, y });
                 }
@@ -101,6 +106,7 @@ function GameControls({
             newWorm.pop();
         } else {
             setScore(score + 1);
+            playSound("pop");
             setWormSize((size) => Math.min(size + 0.1, 2));
             setAppleCollected(true)
             const nextApple = generateApple(newWorm);
@@ -112,11 +118,16 @@ function GameControls({
             }
         }
         const reachedPortal =
-            newHead.x === 6 && newHead.y === 6;
+            newHead.x === portal.x && newHead.y === portal.y;
         if (reachedPortal && appleCollected) {
-            // setLevelComplete(true);
-            // setGameOver(true);
-            goToNextLevel();
+            setWorm(newWorm);
+            setPortalEntering(true);
+            playSound("portal");
+            setTimeout(() => {
+                goToNextLevel();
+                setPortalEntering(false);
+            }, 1000);
+
             return;
         }
         setWorm(newWorm);
@@ -142,7 +153,7 @@ function GameControls({
         return () => {
             window.removeEventListener("keydown", handleKeyDown);
         };
-    }, [worm, apple, gameOver])
+    }, [worm, apple, gameOver, appleCollected, portal]);
     return (
         <>
             <div className="controls">

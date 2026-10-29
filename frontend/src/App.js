@@ -1,11 +1,34 @@
 import './App.css';
-import { useState } from 'react';
+import { playSound } from "./utils/playSounds";
 import GameBoard from './components/GameBoard';
 import GameControls from './components/GameControls';
 import levels from './data/Levels';
 import HomeScreen from './components/HomeScreen/HomeScreen';
 import LevelSelection from './components/LevelSelection/LevelSelection';
+import { useState, useEffect, useRef } from 'react';
 function App() {
+  const bgMusicRef = useRef(null);
+
+  const startBgMusic = () => {
+    if (!bgMusicRef.current) {
+      bgMusicRef.current = new Audio("/sounds/bg.mp3");
+      bgMusicRef.current.loop = true;
+      bgMusicRef.current.volume = 0.2;
+    }
+
+    bgMusicRef.current.play().catch((error) => {
+      console.log("Background music start nahi hua:", error);
+    });
+  };
+
+  useEffect(() => {
+    return () => {
+      if (bgMusicRef.current) {
+        bgMusicRef.current.pause();
+        bgMusicRef.current = null;
+      }
+    };
+  }, []);
   const [currentLevel, setCurrentLevel] = useState(0);
   const levelData = levels[currentLevel];
   const initialWorm = [levelData.start];
@@ -18,6 +41,8 @@ function App() {
   const [wormSize, setWormSize] = useState(1);
   const [showNextLevelPrompt, setShowNextLevelPrompt] = useState(false);
   const [screen, setScreen] = useState("home");
+  const [movesLeft, setMovesLeft] = useState(null);
+  const [portalEntering, setPortalEntering] = useState(false);
   const selectLevel = (index) => {
     const selectedLevel = levels[index];
 
@@ -59,6 +84,7 @@ function App() {
   }
   const goToNextLevel = () => {
     if (currentLevel < levels.length - 1) {
+      playSound("win");
       setShowNextLevelPrompt(true);
       setLevelComplete(true);
       setGameOver(true);
@@ -80,7 +106,14 @@ function App() {
   };
   return (
     <>
-      {screen === "home" && <HomeScreen onPlay={() => setScreen("levels")} />}
+      {screen === "home" && (
+        <HomeScreen
+          onPlay={() => {
+            startBgMusic();
+            setScreen("levels");
+          }}
+        />
+      )}
       {screen === "levels" && (
         <LevelSelection
           levels={levels}
@@ -121,6 +154,8 @@ function App() {
                 obstacles={levelData.obstacles}
                 appleCollected={appleCollected}
                 wormSize={wormSize}
+                portalEntering={portalEntering}
+                setPortalEntering={setPortalEntering}
               />
 
               <div className="side-controls">
@@ -142,6 +177,10 @@ function App() {
                   setWormSize={setWormSize}
                   goToNextLevel={goToNextLevel}
                   initialApple={levelData.apple}
+                  movesLeft={movesLeft}
+                  setMovesLeft={setMovesLeft}
+                  setPortalEntering={setPortalEntering}
+                  portal={levelData.portal}
                 />
               </div>
             </div>

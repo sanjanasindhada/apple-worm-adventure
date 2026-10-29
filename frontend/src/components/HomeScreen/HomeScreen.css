@@ -1,32 +1,60 @@
+
 .home-screen {
-    min-height: 100vh;
+    position: relative;
     width: 100%;
-    background-image: url("/public/home-bg.png");
-    background-size: cover;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    box-sizing: border-box;
+
+    background-image: url('/public/home-bg.png');
+    background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    background-color: #35b8ed;
 }
 
 .play-button {
     position: absolute;
-    top: 73%;
     left: 50%;
+    top: 66%;
     transform: translate(-50%, -50%);
-    width: 280px;
-    height: 100px;
-    background-color: transparent;
+
+    width: 26%;
+    max-width: 400px;
+    min-height: 55px;
+
+    background: transparent;
+    color: white;
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: clamp(18px, 2.5vw, 30px);
+    font-weight: bold;
+
     border: none;
+    border-radius: 50px;
     cursor: pointer;
-    color: aliceblue;
-    font-size: 50px;
-    z-index: 10;
-    font-family: 'Fredoka', sans-serif;
-    font-size: 32px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 2px;
+    z-index: 2;
+}
+
+.play-button:hover {
+    transform: translate(-50%, -50%) scale(1.04);
+}
+
+.play-button:active {
+    transform: translate(-50%, -50%) scale(0.97);
+}
+
+@media (max-width: 480px) {
+    .home-screen {
+        background-size: 100% auto;
+        background-position: center;
+    }
+
+    .play-button {
+        top: calc(50% + 11vw);
+        width: 30%;
+        min-height: 35px;
+        padding: 5px;
+        font-size: 16px;
+    }
 }

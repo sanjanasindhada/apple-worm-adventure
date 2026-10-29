@@ -84,7 +84,18 @@ const obstaclePatterns = [
         { x: 6, y: 3 }, { x: 6, y: 5 },
     ],
 ];
-
+const portalPositions = [
+    { x: 6, y: 6 },
+    { x: 2, y: 6 },
+    { x: 6, y: 1 },
+    { x: 0, y: 7 },
+    { x: 7, y: 0 },
+    { x: 1, y: 6 },
+    { x: 4, y: 2 },
+    { x: 7, y: 7 },
+    { x: 0, y: 4 },
+    { x: 4, y: 7 },
+];
 const applePositions = [
     { x: 4, y: 4 },
     { x: 5, y: 2 },
@@ -100,13 +111,15 @@ const applePositions = [
 
 const levels = Array.from({ length: 50 }, (_, index) => {
     const levelNumber = index + 1;
-
+    const portal = portalPositions[
+        index % portalPositions.length
+    ];
     const obstacles = obstaclePatterns[
         index % obstaclePatterns.length
     ].filter(
         (obstacle) =>
             !(obstacle.x === 1 && obstacle.y === 1) &&
-            !(obstacle.x === 6 && obstacle.y === 6)
+            !(obstacle.x === portal.x && obstacle.y === portal.y)
     );
 
     const availablePositions = [];
@@ -118,7 +131,7 @@ const levels = Array.from({ length: 50 }, (_, index) => {
             );
 
             const onStart = x === 1 && y === 1;
-            const onPortal = x === 6 && y === 6;
+            const onPortal = x === portal.x && y === portal.y;
 
             if (!onObstacle && !onStart && !onPortal) {
                 availablePositions.push({ x, y });
@@ -135,7 +148,7 @@ const levels = Array.from({ length: 50 }, (_, index) => {
         level: levelNumber,
         start: { x: 1, y: 1 },
         apple: { ...apple },
-        portal: { x: 6, y: 6 },
+        portal: { ...portal },
         obstacles,
     };
 });
