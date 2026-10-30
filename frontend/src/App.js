@@ -6,7 +6,7 @@ import levels from './data/Levels';
 import HomeScreen from './components/HomeScreen/HomeScreen';
 import LevelSelection from './components/LevelSelection/LevelSelection';
 import { useState, useEffect, useRef } from 'react';
-
+import { playClickSound } from './utils/playSounds';
 function App() {
   const bgMusicRef = useRef(null);
 
@@ -129,7 +129,12 @@ function App() {
 
               <button
                 className="big-play-btn"
-                onClick={playNextLevel}
+                onClick={() => {
+                  playNextLevel();
+                  playClickSound();
+                }
+                }
+
               >
                 ▶ PLAY LEVEL {levelData.level + 1}
               </button>

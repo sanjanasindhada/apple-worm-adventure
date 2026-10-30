@@ -7,3 +7,15 @@ export function playSound(name) {
         console.log("Sound play nahi hua:", error);
     });
 }
+export function playClickSound() {
+    const audio = new Audio("/sounds/click.mp3");
+    audio.volume = 0.4;
+
+    audio.play().catch(() => { });
+}
+export function playMoveSound() {
+    const audio = new Audio("/sounds/move.mp3");
+    audio.volume = 0.25;
+
+    audio.play().catch(() => {});
+}

@@ -1,6 +1,7 @@
 import { useEffect, useCallback } from "react";
 import { playSound } from "../utils/playSounds";
-
+import { playClickSound } from "../utils/playSounds";
+import { playMoveSound } from "../utils/playSounds";
 function GameControls({
     setWorm,
     setScore,
@@ -107,6 +108,7 @@ function GameControls({
             );
 
             if (hitObstacles) {
+                playSound("hitobs");
                 return;
             }
 
@@ -118,6 +120,7 @@ function GameControls({
             );
 
             if (hitSelf) {
+                playSound("hitself")
                 setGameOver(true);
                 return;
             }
@@ -164,7 +167,7 @@ function GameControls({
 
                 return;
             }
-
+            playMoveSound();
             setWorm(newWorm);
         },
         [
@@ -241,7 +244,10 @@ function GameControls({
                 </div>
             </div>
 
-            <button className="restart" onClick={restartGame}>
+            <button className="restart" onClick={() => {
+                restartGame();
+                playClickSound();
+            }}>
                 Restart Game
             </button>
         </>

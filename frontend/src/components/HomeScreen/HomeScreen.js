@@ -1,3 +1,4 @@
+import { playClickSound } from "../../utils/playSounds";
 import "./HomeScreen.css";
 
 function HomeScreen({ onPlay }) {
@@ -5,7 +6,10 @@ function HomeScreen({ onPlay }) {
         <div className="home-screen">
             <button
                 className="play-button"
-                onClick={onPlay}
+                onClick={()=>{
+                    onPlay();
+                    playClickSound();
+                }}
                 aria-label="Play game"
             >
                 ▶ Play 
