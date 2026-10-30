@@ -1,6 +1,6 @@
 import { playClickSound } from '../../utils/playSounds';
 import './LevelSelection.css';
-export default function LevelSelection({ levels, onSelectLevel, onBack }) {
+export default function LevelSelection({ levels, onSelectLevel, onBack, unlockedLevels }) {
     return (
         <div className="level-screen">
             <button className="back-button" onClick={() => {
@@ -13,7 +13,7 @@ export default function LevelSelection({ levels, onSelectLevel, onBack }) {
             <p>Choose your adventure!</p>
             <div className="level-grid">
                 {levels.map((level, index) => {
-                    const unlocked = index === 0;
+                    const unlocked = index < unlockedLevels;
                     return (
                         <button key={level.level} className={`level-button ${unlocked ? "unlocked" : "locked"}`}
                             disabled={!unlocked}

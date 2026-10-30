@@ -2,6 +2,7 @@ import { useEffect, useCallback } from "react";
 import { playSound } from "../utils/playSounds";
 import { playClickSound } from "../utils/playSounds";
 import { playMoveSound } from "../utils/playSounds";
+import './gamecontrol.css';
 function GameControls({
     setWorm,
     setScore,
@@ -21,12 +22,15 @@ function GameControls({
     initialApple,
     setPortalEntering,
     portal = { x: 6, y: 6 },
+    moves,
+    setMoves
 }) {
     // Restart game
     const restartGame = () => {
         setWorm(initialWorm);
         setApple(initialApple);
         setScore(0);
+        setMoves(0);
         setGameOver(false);
         setAppleCollected(false);
         setLevelComplete(false);
@@ -156,6 +160,7 @@ function GameControls({
                 newHead.y === portal.y;
 
             if (reachedPortal && appleCollected) {
+                setMoves((prevMoves) => prevMoves + 1);
                 setWorm(newWorm);
                 setPortalEntering(true);
                 playSound("portal");
@@ -168,6 +173,7 @@ function GameControls({
                 return;
             }
             playMoveSound();
+            setMoves((prevMoves) => prevMoves + 1);
             setWorm(newWorm);
         },
         [
@@ -225,23 +231,13 @@ function GameControls({
     return (
         <>
             <div className="controls">
-                <button onClick={() => moveWorm(0, -1)}>
-                    ⬆️
-                </button>
+                <button className="up" onClick={() => moveWorm(0, -1)}>⬆️</button>
 
-                <div>
-                    <button onClick={() => moveWorm(-1, 0)}>
-                        ⬅️
-                    </button>
+                <button className="left" onClick={() => moveWorm(-1, 0)}>⬅️</button>
 
-                    <button onClick={() => moveWorm(0, 1)}>
-                        ⬇️
-                    </button>
+                <button className="right" onClick={() => moveWorm(1, 0)}>➡️</button>
 
-                    <button onClick={() => moveWorm(1, 0)}>
-                        ➡️
-                    </button>
-                </div>
+                <button className="down" onClick={() => moveWorm(0, 1)}>⬇️</button>
             </div>
 
             <button className="restart" onClick={() => {

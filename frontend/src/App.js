@@ -46,10 +46,14 @@ function App() {
   const [screen, setScreen] = useState("home");
   const [movesLeft, setMovesLeft] = useState(null);
   const [portalEntering, setPortalEntering] = useState(false);
+  const [moves, setMoves] = useState(0);
+  const [earnedStars, setEarnedStars] = useState(0);
+  const [unlockedLevels, setUnlockedLevels] = useState(1);
 
   const selectLevel = (index) => {
     const selectedLevel = levels[index];
-
+    setMoves(0);
+    setEarnedStars(0);
     setCurrentLevel(index);
     setWorm([selectedLevel.start]);
     setApple(selectedLevel.apple);
@@ -61,16 +65,27 @@ function App() {
     setWormSize(1);
     setMovesLeft(null);
     setPortalEntering(false);
-
+    setEarnedStars(0);
     setScreen("game");
   };
 
   const goToNextLevel = () => {
+    setUnlockedLevels((prev) =>
+      Math.max(prev, currentLevel + 2)
+    );
+    const target = levelData.starTarget;
+    let stars = 1;
+    if (moves <= target.threeStars) {
+      stars = 3;
+    }
+    else if (moves <= target.twoStars) {
+      stars = 2;
+    }
+    setEarnedStars(stars);
     if (currentLevel < levels.length - 1) {
       playSound("win");
       setShowNextLevelPrompt(true);
       setLevelComplete(true);
-      setGameOver(true);
     }
   };
 
@@ -89,6 +104,8 @@ function App() {
     setWormSize(1);
     setMovesLeft(null);
     setPortalEntering(false);
+    setMoves(0);
+    setEarnedStars(0);
   };
 
   return (
@@ -107,6 +124,7 @@ function App() {
           levels={levels}
           onBack={() => setScreen("home")}
           onSelectLevel={selectLevel}
+          unlockedLevels={unlockedLevels}
         />
       )}
 
@@ -118,26 +136,37 @@ function App() {
 
           <h3>Level {levelData.level} | Score: {score}</h3>
 
-          {gameOver && (
+          {gameOver && !levelComplete && (
             <h2>Game Over! Try Again 🎮</h2>
           )}
 
           {showNextLevelPrompt && (
             <div className="level-prompt">
-              <h2>🎉 Level Complete!</h2>
+              <div className="celebration">🎉 🎊 🎉</div>
+
+              <h2>Level Complete!</h2>
+
+              {/* Earned Stars */}
+              <div className="earned-stars">
+                {"⭐".repeat(earnedStars)}
+              </div>
+
+              <p>You completed the level in {moves} moves!</p>
               <p>Ready for the next challenge?</p>
 
-              <button
-                className="big-play-btn"
-                onClick={() => {
-                  playNextLevel();
-                  playClickSound();
-                }
-                }
-
-              >
-                ▶ PLAY LEVEL {levelData.level + 1}
-              </button>
+              {currentLevel < levels.length - 1 ? (
+                <button
+                  className="big-play-btn"
+                  onClick={() => {
+                    playNextLevel();
+                    playClickSound();
+                  }}
+                >
+                  ▶ PLAY LEVEL {levelData.level + 1}
+                </button>
+              ) : (
+                <h2>🏆 All Levels Completed!</h2>
+              )}
             </div>
           )}
 
@@ -156,6 +185,8 @@ function App() {
 
               <div className="side-controls">
                 <GameControls
+                  moves={moves}
+                  setMoves={setMoves}
                   setLevelComplete={setLevelComplete}
                   levelComplete={levelComplete}
                   setScore={setScore}

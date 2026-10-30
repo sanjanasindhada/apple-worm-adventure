@@ -138,6 +138,10 @@ const levels = Array.from({ length: 50 }, (_, index) => {
         apple: { ...apple },
         portal: { ...portal },
         obstacles,
+        starTarget: {
+            threeStars: 12,
+            twoStars: 18,
+        },
     };
 });
 
