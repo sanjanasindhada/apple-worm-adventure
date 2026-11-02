@@ -130,6 +130,15 @@ function App() {
 
       {screen === "game" && (
         <div className="game-container">
+          <button
+            className="back-button"
+            onClick={() => {
+              setScreen("levels");
+              playClickSound();
+            }}
+          >
+            ← Back to Levels
+          </button>
           <h1>🍎 Apple Worm Adventure</h1>
 
           <p>Collect apples and grow your worm!</p>
