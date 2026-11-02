@@ -664,3 +664,24 @@ button {
     margin-top: 15px;
   }
 }
+@media screen and (max-width: 600px) {
+  .game-layout {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    gap: 15px !important;
+  }
+
+  .game-board {
+    width: min(90vw, 380px) !important;
+    flex-shrink: 0 !important;
+  }
+
+  .side-controls {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex-shrink: 1 !important;
+    align-items: center !important;
+  }
+}
