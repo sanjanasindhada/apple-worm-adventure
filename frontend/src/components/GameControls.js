@@ -193,6 +193,7 @@ function GameControls({
             setAppleCollected,
             setWormSize,
             setPortalEntering,
+            setMoves
         ]
     );
 
