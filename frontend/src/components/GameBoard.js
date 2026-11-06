@@ -63,18 +63,23 @@ function GameBoard({
                             }`}
                     >
                         {isHead ? (
-                            <span className={`worm-head ${portalEntering ? "portal-entering" : ""}`}>
-                                <span className="worm-antenna left-antenna" />
-                                <span className="worm-antenna right-antenna" />
-                                <span className="worm-eye left-eye"></span>
-                                <span className="worm-eye right-eye"></span>
-                                <span className="worm-smile"></span>
-                                {isSingleWorm && <span className="worm-tail single-tail" />}
-                            </span>
+                            <>
+                                {isSingleWorm && (
+                                    <span className="single-tail" />
+                                )}
+
+                                <span className={`worm-head ${portalEntering ? "portal-entering" : ""}`}>
+                                    <span className="worm-antenna left-antenna" />
+                                    <span className="worm-antenna right-antenna" />
+                                    <span className="worm-eye left-eye"></span>
+                                    <span className="worm-eye right-eye"></span>
+                                    <span className="worm-smile"></span>
+                                </span>
+                            </>
                         ) : isWorm ? (
                             <span
                                 className={`worm-circle ${portalEntering ? "portal-entering" : ""
-                                    } ${isTail ? "worm-tail" : ""}`}
+                                    } ${isTail ? "worm-tail" : "worm-body-segment"}`}
                                 style={
                                     isTail
                                         ? { "--tail-angle": `${tailAngle}deg` }
@@ -100,7 +105,7 @@ function GameBoard({
                     </div>
                 );
             })}
-        </div>
+        </div >
     );
 }
 
