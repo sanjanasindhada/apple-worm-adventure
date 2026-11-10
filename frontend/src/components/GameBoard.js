@@ -30,7 +30,6 @@ function GameBoard({
                     displayWorm[0].x === x &&
                     displayWorm[0].y === y;
 
-                const isSingleWorm = displayWorm.length === 1;
 
                 const isWorm = displayWorm.some(
                     part => part.x === x && part.y === y
