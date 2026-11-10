@@ -53,7 +53,7 @@ function App() {
     const [gameOver, setGameOver] = useState(false);
 
     const [appleCollected, setAppleCollected] = useState(false);
-    const [, setLevelComplete] = useState(false); m
+    const [, setLevelComplete] = useState(false); 
 
     const [wormSize, setWormSize] = useState(1);
 
