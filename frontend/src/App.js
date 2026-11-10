@@ -44,7 +44,10 @@ function App() {
 
     const levelData = levels[currentLevel];
 
-    const initialWorm = [levelData.start];
+    const initialWorm = [
+        levelData.start,
+        { x: levelData.start.x + 1, y: levelData.start.y }
+    ];
 
     const [worm, setWorm] = useState(initialWorm);
     const [apple, setApple] = useState(levelData.apple);
@@ -53,7 +56,7 @@ function App() {
     const [gameOver, setGameOver] = useState(false);
 
     const [appleCollected, setAppleCollected] = useState(false);
-    const [, setLevelComplete] = useState(false); 
+    const [, setLevelComplete] = useState(false);
 
     const [wormSize, setWormSize] = useState(1);
 
@@ -77,7 +80,10 @@ function App() {
     const [fallingWorm, setFallingWorm] = useState(null);
     const [showGameOver, setShowGameOver] = useState(false);
     const resetLevel = (selectedLevel) => {
-        setWorm([selectedLevel.start]);
+        setWorm([
+            selectedLevel.start,
+            { x: selectedLevel.start.x + 1, y: selectedLevel.start.y }
+        ]);
         setApple(selectedLevel.apple);
 
         setScore(0);

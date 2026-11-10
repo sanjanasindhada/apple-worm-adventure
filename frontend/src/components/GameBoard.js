@@ -35,7 +35,9 @@ function GameBoard({
                 const isWorm = displayWorm.some(
                     part => part.x === x && part.y === y
                 );
-
+                if (isWorm) {
+                    console.log("Worm rendered at:", x, y);
+                }
                 const isFallingWorm = falling && isWorm;
 
                 const isApple =
@@ -89,9 +91,6 @@ function GameBoard({
                     >
                         {isHead ? (
                             <>
-                                {isSingleWorm && (
-                                    <span className="worm-circle worm-tail" />
-                                )}
                                 <span
                                     className={`worm-head ${portalEntering ? "portal-entering" : ""
                                         }`}

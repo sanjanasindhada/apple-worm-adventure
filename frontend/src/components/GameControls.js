@@ -152,10 +152,9 @@ function GameControls({
                 newHead.y === apple.y;
 
             // Body follows previous positions
-            let newWorm = [
-                newHead,
-                ...(ateApple ? worm : worm.slice(0, -1))
-            ];
+            let newWorm = ateApple
+                ? [newHead, ...worm]
+                : [newHead, ...worm.slice(0, -1)];
 
             // Self collision
             const bodyToCheck = newWorm.slice(1);
@@ -262,6 +261,8 @@ function GameControls({
 
             setMoves(prev => prev + 1);
             setWorm(newWorm);
+            console.log("Worm length:", newWorm.length);
+            console.log("Worm positions:", newWorm)
         },
         [
             gameOver,

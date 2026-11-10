@@ -1,500 +1,476 @@
 
-
-const obstaclePatterns = [
-    [
-        ...Array.from({ length: 6 }, (_, i) => ({ x: i, y: 2 })),
-        ...Array.from({ length: 5 }, (_, i) => ({ x: i + 3, y: 4 })),
-        ...Array.from({ length: 3 }, (_, i) => ({ x: i, y: 6 })),
-    ],
-
-    [
-        ...Array.from({ length: 5 }, (_, i) => ({ x: 2, y: i })),
-        ...Array.from({ length: 5 }, (_, i) => ({ x: 5, y: i + 2 })),
-        { x: 3, y: 5 },
-        { x: 4, y: 5 },
-    ],
-
-    [
-        ...Array.from({ length: 7 }, (_, i) => ({ x: i, y: 3 })),
-        ...Array.from({ length: 6 }, (_, i) => ({ x: i + 1, y: 5 })),
-        { x: 2, y: 1 },
-        { x: 5, y: 1 },
-    ],
-
-    [
-        { x: 2, y: 1 }, { x: 3, y: 1 }, { x: 4, y: 1 },
-        { x: 1, y: 2 }, { x: 4, y: 2 }, { x: 6, y: 2 },
-        { x: 1, y: 3 }, { x: 6, y: 3 },
-        { x: 2, y: 4 }, { x: 3, y: 4 }, { x: 6, y: 4 },
-        { x: 2, y: 5 }, { x: 5, y: 5 },
-        { x: 1, y: 6 }, { x: 5, y: 6 },
-    ],
-
-    [
-        ...Array.from({ length: 5 }, (_, i) => ({ x: i + 1, y: 3 })),
-        ...Array.from({ length: 4 }, (_, i) => ({ x: 3, y: i })),
-        { x: 0, y: 5 },
-        { x: 1, y: 5 },
-        { x: 5, y: 1 },
-        { x: 6, y: 1 },
-        { x: 5, y: 5 },
-        { x: 5, y: 6 },
-    ],
-
-    [
-        ...Array.from({ length: 5 }, (_, i) => ({ x: i + 2, y: 1 })),
-        ...Array.from({ length: 5 }, (_, i) => ({ x: i, y: 3 })),
-        ...Array.from({ length: 5 }, (_, i) => ({ x: i + 2, y: 5 })),
-        { x: 1, y: 6 }, { x: 2, y: 6 },
-    ],
-
-    [
-        { x: 2, y: 1 }, { x: 3, y: 1 }, { x: 5, y: 1 },
-        { x: 2, y: 2 }, { x: 5, y: 2 }, { x: 6, y: 2 },
-        { x: 1, y: 3 }, { x: 2, y: 3 }, { x: 6, y: 3 },
-        { x: 1, y: 4 }, { x: 4, y: 4 }, { x: 5, y: 4 },
-        { x: 3, y: 5 }, { x: 4, y: 5 }, { x: 6, y: 5 },
-    ],
-
-    [
-        ...Array.from({ length: 6 }, (_, i) => ({ x: i + 1, y: 2 })),
-        ...Array.from({ length: 6 }, (_, i) => ({ x: i, y: 4 })),
-        ...Array.from({ length: 5 }, (_, i) => ({ x: i + 2, y: 6 })),
-        { x: 1, y: 5 }, { x: 6, y: 1 },
-    ],
-
-    [
-        { x: 2, y: 1 }, { x: 3, y: 1 },
-        { x: 5, y: 1 }, { x: 6, y: 1 },
-        { x: 2, y: 2 }, { x: 5, y: 2 },
-        { x: 3, y: 3 }, { x: 4, y: 3 },
-        { x: 6, y: 3 },
-        { x: 3, y: 4 }, { x: 5, y: 4 },
-        { x: 6, y: 4 },
-        { x: 2, y: 5 }, { x: 4, y: 5 },
-        { x: 2, y: 6 }, { x: 3, y: 6 },
-        { x: 5, y: 6 },
-    ],
-    [
-        ...Array.from({ length: 5 }, (_, i) => ({ x: i + 2, y: 1 })),
-        ...Array.from({ length: 4 }, (_, i) => ({ x: i, y: 2 })),
-        ...Array.from({ length: 5 }, (_, i) => ({ x: i + 1, y: 4 })),
-        ...Array.from({ length: 4 }, (_, i) => ({ x: i, y: 6 })),
-        { x: 6, y: 3 }, { x: 6, y: 5 },
-    ],
-
-    // Level 11
-    [{ x: 1, y: 2 }, { x: 2, y: 2 }, { x: 4, y: 2 }, { x: 5, y: 2 },
-    { x: 2, y: 4 }, { x: 3, y: 4 }, { x: 5, y: 4 },
-    { x: 1, y: 6 }, { x: 4, y: 6 }, { x: 6, y: 6 }],
-
-    // Level 12
-    [{ x: 3, y: 0 }, { x: 3, y: 1 }, { x: 3, y: 2 },
-    { x: 1, y: 3 }, { x: 2, y: 3 }, { x: 5, y: 3 }, { x: 6, y: 3 },
-    { x: 4, y: 5 }, { x: 4, y: 6 }, { x: 4, y: 7 }],
-
-    // Level 13
-    [{ x: 0, y: 2 }, { x: 1, y: 2 }, { x: 2, y: 2 },
-    { x: 5, y: 2 }, { x: 6, y: 2 }, { x: 7, y: 2 },
-    { x: 2, y: 4 }, { x: 3, y: 4 }, { x: 4, y: 4 },
-    { x: 5, y: 6 }, { x: 6, y: 6 }],
-
-    // Level 14
-    [{ x: 2, y: 0 }, { x: 2, y: 1 }, { x: 2, y: 3 },
-    { x: 5, y: 1 }, { x: 5, y: 2 }, { x: 5, y: 3 },
-    { x: 1, y: 5 }, { x: 2, y: 5 }, { x: 3, y: 5 },
-    { x: 6, y: 5 }, { x: 6, y: 6 }],
-
-    // Level 15
-    [{ x: 0, y: 3 }, { x: 1, y: 3 }, { x: 3, y: 3 }, { x: 4, y: 3 },
-    { x: 6, y: 3 }, { x: 7, y: 3 },
-    { x: 1, y: 5 }, { x: 2, y: 5 }, { x: 4, y: 5 },
-    { x: 5, y: 5 }, { x: 6, y: 5 }],
-
-    // Level 16
-    [{ x: 2, y: 1 }, { x: 4, y: 1 }, { x: 6, y: 1 },
-    { x: 2, y: 2 }, { x: 4, y: 2 }, { x: 6, y: 2 },
-    { x: 1, y: 4 }, { x: 3, y: 4 }, { x: 5, y: 4 },
-    { x: 1, y: 6 }, { x: 3, y: 6 }, { x: 5, y: 6 }],
-
-    // Level 17
-    [{ x: 1, y: 1 }, { x: 3, y: 1 }, { x: 5, y: 1 },
-    { x: 1, y: 3 }, { x: 3, y: 3 }, { x: 5, y: 3 },
-    { x: 2, y: 5 }, { x: 4, y: 5 }, { x: 6, y: 5 },
-    { x: 2, y: 7 }, { x: 4, y: 7 }],
-
-    // Level 18
-    [{ x: 0, y: 1 }, { x: 1, y: 1 }, { x: 2, y: 1 },
-    { x: 5, y: 1 }, { x: 6, y: 1 },
-    { x: 3, y: 3 }, { x: 4, y: 3 }, { x: 5, y: 3 },
-    { x: 0, y: 5 }, { x: 1, y: 5 }, { x: 6, y: 5 }],
-
-    // Level 19
-    [{ x: 2, y: 0 }, { x: 4, y: 0 }, { x: 6, y: 0 },
-    { x: 1, y: 2 }, { x: 3, y: 2 }, { x: 5, y: 2 },
-    { x: 2, y: 4 }, { x: 4, y: 4 }, { x: 6, y: 4 },
-    { x: 1, y: 6 }, { x: 3, y: 6 }, { x: 5, y: 6 }],
-
-    // Level 20
-    [{ x: 0, y: 2 }, { x: 1, y: 2 }, { x: 2, y: 2 },
-    { x: 5, y: 2 }, { x: 6, y: 2 }, { x: 7, y: 2 },
-    { x: 0, y: 5 }, { x: 2, y: 5 }, { x: 3, y: 5 },
-    { x: 4, y: 5 }, { x: 7, y: 5 }],
-
-    // Level 21
-    [{ x: 1, y: 0 }, { x: 1, y: 1 }, { x: 1, y: 3 },
-    { x: 3, y: 2 }, { x: 3, y: 3 }, { x: 3, y: 4 },
-    { x: 5, y: 3 }, { x: 5, y: 4 }, { x: 5, y: 5 },
-    { x: 6, y: 6 }, { x: 7, y: 6 }],
-
-    // Level 22
-    [{ x: 0, y: 1 }, { x: 2, y: 1 }, { x: 4, y: 1 }, { x: 6, y: 1 },
-    { x: 1, y: 3 }, { x: 3, y: 3 }, { x: 5, y: 3 }, { x: 7, y: 3 },
-    { x: 0, y: 5 }, { x: 2, y: 5 }, { x: 4, y: 5 }, { x: 6, y: 5 }],
-
-    // Level 23
-    [{ x: 2, y: 1 }, { x: 3, y: 1 }, { x: 4, y: 1 },
-    { x: 1, y: 3 }, { x: 2, y: 3 }, { x: 5, y: 3 }, { x: 6, y: 3 },
-    { x: 1, y: 5 }, { x: 4, y: 5 }, { x: 5, y: 5 },
-    { x: 3, y: 6 }],
-
-    // Level 24
-    [{ x: 0, y: 2 }, { x: 2, y: 2 }, { x: 4, y: 2 }, { x: 6, y: 2 },
-    { x: 1, y: 4 }, { x: 3, y: 4 }, { x: 5, y: 4 }, { x: 7, y: 4 },
-    { x: 2, y: 6 }, { x: 4, y: 6 }, { x: 6, y: 6 }],
-
-    // Level 25
-    [{ x: 3, y: 0 }, { x: 4, y: 0 }, { x: 5, y: 0 },
-    { x: 1, y: 2 }, { x: 2, y: 2 }, { x: 5, y: 2 }, { x: 6, y: 2 },
-    { x: 0, y: 4 }, { x: 1, y: 4 }, { x: 4, y: 4 }, { x: 7, y: 4 },
-    { x: 2, y: 6 }, { x: 5, y: 6 }],
-
-    // Level 26
-    [{ x: 1, y: 1 }, { x: 2, y: 1 }, { x: 4, y: 1 }, { x: 6, y: 1 },
-    { x: 1, y: 3 }, { x: 4, y: 3 }, { x: 6, y: 3 },
-    { x: 2, y: 5 }, { x: 3, y: 5 }, { x: 5, y: 5 }, { x: 7, y: 5 },
-    { x: 3, y: 7 }],
-
-    // Level 27
-    [{ x: 0, y: 2 }, { x: 1, y: 2 }, { x: 3, y: 2 }, { x: 4, y: 2 },
-    { x: 6, y: 2 }, { x: 7, y: 2 },
-    { x: 2, y: 4 }, { x: 3, y: 4 }, { x: 5, y: 4 }, { x: 6, y: 4 },
-    { x: 1, y: 6 }, { x: 4, y: 6 }],
-
-    // Level 28
-    [{ x: 2, y: 0 }, { x: 4, y: 0 }, { x: 6, y: 0 },
-    { x: 0, y: 2 }, { x: 2, y: 2 }, { x: 4, y: 2 }, { x: 6, y: 2 },
-    { x: 1, y: 4 }, { x: 3, y: 4 }, { x: 5, y: 4 }, { x: 7, y: 4 },
-    { x: 2, y: 6 }, { x: 4, y: 6 }],
-
-    // Level 29
-    [{ x: 1, y: 2 }, { x: 2, y: 2 }, { x: 3, y: 2 },
-    { x: 5, y: 2 }, { x: 6, y: 2 },
-    { x: 0, y: 4 }, { x: 2, y: 4 }, { x: 4, y: 4 }, { x: 6, y: 4 },
-    { x: 1, y: 6 }, { x: 3, y: 6 }, { x: 5, y: 6 }],
-
-    // Level 30
-    [{ x: 0, y: 1 }, { x: 1, y: 1 }, { x: 3, y: 1 }, { x: 5, y: 1 },
-    { x: 7, y: 1 }, { x: 2, y: 3 }, { x: 4, y: 3 }, { x: 6, y: 3 },
-    { x: 0, y: 5 }, { x: 2, y: 5 }, { x: 4, y: 5 }, { x: 6, y: 5 }],
-
-    // Level 31
-    [{ x: 2, y: 0 }, { x: 3, y: 0 }, { x: 5, y: 0 },
-    { x: 1, y: 2 }, { x: 3, y: 2 }, { x: 5, y: 2 },
-    { x: 1, y: 4 }, { x: 3, y: 4 }, { x: 6, y: 4 },
-    { x: 2, y: 6 }, { x: 4, y: 6 }, { x: 6, y: 6 }],
-
-    // Level 32
-    // Level 32
-    [
-        { x: 0, y: 2 }, { x: 2, y: 2 },
-        { x: 4, y: 2 }, { x: 6, y: 2 },
-
-        { x: 3, y: 3 }, { x: 5, y: 3 }, { x: 7, y: 3 },
-        { x: 0, y: 5 }, { x: 2, y: 5 },
-        { x: 4, y: 5 }, { x: 6, y: 5 }
-    ],
-
-    // Level 33
-    [{ x: 1, y: 0 }, { x: 3, y: 0 }, { x: 5, y: 0 },
-    { x: 1, y: 2 }, { x: 3, y: 2 }, { x: 5, y: 2 },
-    { x: 2, y: 4 }, { x: 4, y: 4 }, { x: 6, y: 4 },
-    { x: 1, y: 6 }, { x: 3, y: 6 }, { x: 5, y: 6 }],
-
-    // Level 34
-    [{ x: 0, y: 1 }, { x: 2, y: 1 }, { x: 4, y: 1 }, { x: 6, y: 1 },
-    { x: 0, y: 3 }, { x: 2, y: 3 }, { x: 4, y: 3 }, { x: 6, y: 3 },
-    { x: 1, y: 5 }, { x: 3, y: 5 }, { x: 5, y: 5 }, { x: 7, y: 5 }],
-
-    // Level 35
-    [{ x: 2, y: 1 }, { x: 3, y: 1 }, { x: 4, y: 1 },
-    { x: 0, y: 3 }, { x: 1, y: 3 }, { x: 5, y: 3 }, { x: 6, y: 3 },
-    { x: 2, y: 5 }, { x: 3, y: 5 }, { x: 4, y: 5 },
-    { x: 6, y: 6 }],
-
-    // Level 36
-    [{ x: 1, y: 0 }, { x: 3, y: 0 }, { x: 5, y: 0 },
-    { x: 1, y: 2 }, { x: 3, y: 2 }, { x: 5, y: 2 },
-    { x: 0, y: 4 }, { x: 2, y: 4 }, { x: 4, y: 4 }, { x: 6, y: 4 },
-    { x: 1, y: 6 }, { x: 3, y: 6 }, { x: 5, y: 6 }],
-
-    // Level 37
-    [{ x: 0, y: 2 }, { x: 1, y: 2 }, { x: 3, y: 2 }, { x: 4, y: 2 },
-    { x: 6, y: 2 }, { x: 7, y: 2 },
-    { x: 1, y: 4 }, { x: 2, y: 4 }, { x: 4, y: 4 }, { x: 5, y: 4 },
-    { x: 2, y: 6 }, { x: 5, y: 6 }],
-
-    // Level 38
-    [{ x: 2, y: 0 }, { x: 5, y: 0 },
-    { x: 1, y: 2 }, { x: 3, y: 2 }, { x: 5, y: 2 }, { x: 7, y: 2 },
-    { x: 0, y: 4 }, { x: 2, y: 4 }, { x: 4, y: 4 }, { x: 6, y: 4 },
-    { x: 1, y: 6 }, { x: 3, y: 6 }, { x: 5, y: 6 }],
-
-    // Level 39
-    [{ x: 1, y: 1 }, { x: 3, y: 1 }, { x: 5, y: 1 },
-    { x: 2, y: 3 }, { x: 4, y: 3 }, { x: 6, y: 3 },
-    { x: 1, y: 5 }, { x: 3, y: 5 }, { x: 5, y: 5 }, { x: 7, y: 5 },
-    { x: 2, y: 7 }, { x: 4, y: 7 }],
-
-    // Level 40
-    [{ x: 0, y: 1 }, { x: 1, y: 1 }, { x: 3, y: 1 }, { x: 4, y: 1 },
-    { x: 6, y: 1 }, { x: 7, y: 1 },
-    { x: 2, y: 3 }, { x: 3, y: 3 }, { x: 5, y: 3 }, { x: 6, y: 3 },
-    { x: 0, y: 5 }, { x: 2, y: 5 }, { x: 4, y: 5 }],
-
-    // Level 41
-    [{ x: 1, y: 0 }, { x: 2, y: 0 }, { x: 4, y: 0 },
-    { x: 1, y: 2 }, { x: 3, y: 2 }, { x: 5, y: 2 },
-    { x: 0, y: 4 }, { x: 2, y: 4 }, { x: 4, y: 4 }, { x: 6, y: 4 },
-    { x: 1, y: 6 }, { x: 3, y: 6 }, { x: 5, y: 6 }, { x: 7, y: 6 }],
-
-    // Level 42
-    [
-        { x: 0, y: 2 }, { x: 2, y: 2 },
-        { x: 4, y: 2 }, { x: 6, y: 2 },
-
-        { x: 3, y: 3 }, { x: 5, y: 3 }, { x: 7, y: 3 },
-        { x: 0, y: 5 }, { x: 2, y: 5 },
-        { x: 4, y: 5 }, { x: 6, y: 5 },
-        { x: 3, y: 7 }
-    ],
-
-    // Level 43
-    [{ x: 2, y: 0 }, { x: 4, y: 0 }, { x: 6, y: 0 },
-    { x: 1, y: 2 }, { x: 3, y: 2 }, { x: 5, y: 2 },
-    { x: 0, y: 4 }, { x: 2, y: 4 }, { x: 4, y: 4 }, { x: 6, y: 4 },
-    { x: 1, y: 6 }, { x: 3, y: 6 }, { x: 5, y: 6 }, { x: 7, y: 6 }],
-
-    // Level 44
-    [{ x: 0, y: 1 }, { x: 2, y: 1 }, { x: 4, y: 1 }, { x: 6, y: 1 },
-    { x: 1, y: 3 }, { x: 3, y: 3 }, { x: 5, y: 3 }, { x: 7, y: 3 },
-    { x: 0, y: 5 }, { x: 2, y: 5 }, { x: 4, y: 5 }, { x: 6, y: 5 },
-    { x: 1, y: 7 }, { x: 5, y: 7 }],
-
-    // Level 45
-    [{ x: 1, y: 1 }, { x: 2, y: 1 }, { x: 4, y: 1 }, { x: 6, y: 1 },
-    { x: 1, y: 3 }, { x: 3, y: 3 }, { x: 5, y: 3 },
-    { x: 2, y: 5 }, { x: 4, y: 5 }, { x: 6, y: 5 },
-    { x: 1, y: 7 }, { x: 3, y: 7 }, { x: 5, y: 7 }],
-
-    // Level 46
-    [{ x: 0, y: 2 }, { x: 1, y: 2 }, { x: 3, y: 2 }, { x: 5, y: 2 }, { x: 7, y: 2 },
-    { x: 1, y: 4 }, { x: 2, y: 4 }, { x: 4, y: 4 }, { x: 6, y: 4 },
-    { x: 0, y: 6 }, { x: 2, y: 6 }, { x: 4, y: 6 }, { x: 6, y: 6 }],
-
-    // Level 47
-    [{ x: 2, y: 0 }, { x: 3, y: 0 }, { x: 5, y: 0 },
-    { x: 1, y: 2 }, { x: 3, y: 2 }, { x: 5, y: 2 }, { x: 7, y: 2 },
-    { x: 0, y: 4 }, { x: 2, y: 4 }, { x: 4, y: 4 }, { x: 6, y: 4 },
-    { x: 1, y: 6 }, { x: 3, y: 6 }, { x: 5, y: 6 }],
-
-    // Level 48
-    [{ x: 0, y: 1 }, { x: 2, y: 1 }, { x: 4, y: 1 }, { x: 6, y: 1 },
-    { x: 1, y: 3 }, { x: 3, y: 3 }, { x: 5, y: 3 }, { x: 7, y: 3 },
-    { x: 0, y: 5 }, { x: 2, y: 5 }, { x: 4, y: 5 }, { x: 6, y: 5 },
-    { x: 1, y: 7 }, { x: 3, y: 7 }, { x: 5, y: 7 }],
-
-    // Level 49
-    [{ x: 1, y: 0 }, { x: 3, y: 0 }, { x: 5, y: 0 },
-    { x: 0, y: 2 }, { x: 2, y: 2 }, { x: 4, y: 2 }, { x: 6, y: 2 },
-    { x: 1, y: 4 }, { x: 3, y: 4 }, { x: 5, y: 4 }, { x: 7, y: 4 },
-    { x: 0, y: 6 }, { x: 2, y: 6 }, { x: 4, y: 6 }, { x: 6, y: 6 }],
-
-    // Level 50
-    [{ x: 0, y: 1 }, { x: 1, y: 1 }, { x: 3, y: 1 }, { x: 5, y: 1 },
-    { x: 7, y: 1 }, { x: 2, y: 3 }, { x: 4, y: 3 }, { x: 6, y: 3 },
-    { x: 0, y: 5 }, { x: 2, y: 5 }, { x: 4, y: 5 }, { x: 6, y: 5 },
-    { x: 1, y: 7 }, { x: 3, y: 7 }, { x: 5, y: 7 }],
-
-];
-const portalPositions = [
-    { x: 6, y: 6 },
-    { x: 2, y: 6 },
-    { x: 6, y: 1 },
-    { x: 0, y: 7 },
-    { x: 7, y: 0 },
-    { x: 1, y: 6 },
-    { x: 4, y: 2 },
-    { x: 7, y: 7 },
-    { x: 0, y: 4 },
-    { x: 4, y: 7 },
-];
-
-const levels = Array.from({ length: 50 }, (_, index) => {
-    const levelNumber = index + 1;
-    const portal = portalPositions[
-        index % portalPositions.length
-    ];
-    const obstacles = obstaclePatterns[
-        index % obstaclePatterns.length
-    ].filter(
-        (obstacle) =>
-            !(obstacle.x === 1 && obstacle.y === 1) &&
-            !(obstacle.x === portal.x && obstacle.y === portal.y)
+const platform = (y, startX, endX) =>
+    Array.from(
+        { length: endX - startX + 1 },
+        (_, i) => ({ x: startX + i, y })
     );
 
-    const availablePositions = [];
-
-    for (let y = 0; y < 8; y++) {
-        for (let x = 0; x < 8; x++) {
-            const onObstacle = obstacles.some(
-                (obstacle) => obstacle.x === x && obstacle.y === y
-            );
-            const hasPlatformBelow = obstacles.some(
-                (obstacle) => obstacle.x === x && obstacle.y === y + 1
-            );
-            const onStart = x === 1 && y === 1;
-            const onPortal = x === portal.x && y === portal.y;
-
-            if (
-                !onObstacle &&
-                !onStart &&
-                !onPortal &&
-                hasPlatformBelow
-            ) {
-                availablePositions.push({ x, y });
-            }
-        }
-    }
-
-    const apple = availablePositions[
-        (index * 7) % availablePositions.length
-    ];
-
-
-    return {
-        level: levelNumber,
+const levels = [
+    // LEVEL 1 - Beginner
+    {
+        level: 1,
         start: { x: 1, y: 1 },
-        apple: { ...apple },
-        portal: { ...portal },
-        obstacles,
-        starTarget: {
-            threeStars: 12,
-            twoStars: 18,
-        },
-    };
-});
+        apple: { x: 3, y: 1 },
+        portal: { x: 6, y: 3 },
+        obstacles: [
+            ...platform(2, 0, 5),
+            ...platform(4, 6, 7),
+        ],
+        starTarget: { threeStars: 12, twoStars: 18 },
+    },
 
-// Automatic testing for all levels
+    // LEVEL 2 - Small Gap
+    {
+        level: 2,
+        start: { x: 1, y: 1 },
+        apple: { x: 4, y: 3 },
+        portal: { x: 6, y: 5 },
+        obstacles: [
+            ...platform(2, 0, 2),
+            ...platform(4, 3, 5),
+            ...platform(6, 6, 7),
+        ],
+        starTarget: { threeStars: 14, twoStars: 20 },
+    },
 
-function canReach(from, to, obstacles) {
-    const blocked = new Set(
-        obstacles.map(({ x, y }) => `${x},${y}`)
-    );
+    // LEVEL 3 - Long Platform
+    {
+        level: 3,
+        start: { x: 1, y: 2 },
+        apple: { x: 4, y: 4 },
+        portal: { x: 6, y: 4 },
+        obstacles: [
+            ...platform(3, 0, 2),
+            ...platform(5, 3, 7),
+        ],
+        starTarget: { threeStars: 15, twoStars: 22 },
+    },
 
-    const queue = [from];
-    const visited = new Set([`${from.x},${from.y}`]);
+    // LEVEL 4 - Stepping Platforms
+    {
+        level: 4,
+        start: { x: 0, y: 1 },
+        apple: { x: 3, y: 2 },
+        portal: { x: 6, y: 4 },
+        obstacles: [
+            ...platform(2, 0, 1),
+            ...platform(3, 2, 4),
+            ...platform(5, 5, 7),
+        ],
+        starTarget: { threeStars: 16, twoStars: 23 },
+    },
 
-    const directions = [
-        { x: 0, y: -1 },
-        { x: 0, y: 1 },
-        { x: -1, y: 0 },
-        { x: 1, y: 0 }
-    ];
+    // LEVEL 5 - Long Route
+    {
+        level: 5,
+        start: { x: 1, y: 3 },
+        apple: { x: 4, y: 3 },
+        portal: { x: 6, y: 5 },
+        obstacles: [
+            ...platform(4, 0, 5),
+            ...platform(6, 6, 7),
+        ],
+        starTarget: { threeStars: 18, twoStars: 25 },
+    },
 
-    while (queue.length > 0) {
-        const current = queue.shift();
+    // LEVEL 6 - Wide Gap
+    {
+        level: 6,
+        start: { x: 1, y: 1 },
+        apple: { x: 5, y: 3 },
+        portal: { x: 6, y: 3 },
+        obstacles: [
+            ...platform(2, 0, 3),
+            ...platform(4, 4, 7),
+        ],
+        starTarget: { threeStars: 18, twoStars: 26 },
+    },
 
-        if (current.x === to.x && current.y === to.y) {
-            return true;
-        }
+    // LEVEL 7 - Different Heights
+    {
+        level: 7,
+        start: { x: 1, y: 2 },
+        apple: { x: 4, y: 4 },
+        portal: { x: 6, y: 2 },
+        obstacles: [
+            ...platform(3, 0, 2),
+            ...platform(3, 5, 7),
+            ...platform(5, 3, 5),
+        ],
+        starTarget: { threeStars: 20, twoStars: 28 },
+    },
 
-        for (const direction of directions) {
-            const next = {
-                x: current.x + direction.x,
-                y: current.y + direction.y
-            };
+    // LEVEL 8 - Multiple Platforms
+    {
+        level: 8,
+        start: { x: 0, y: 4 },
+        apple: { x: 0, y: 3 },
+        portal: { x: 6, y: 4 },
+        obstacles: [
+            ...platform(5, 0, 1),
+            ...platform(3, 2, 4),
+            ...platform(5, 5, 7),
+        ],
+        starTarget: { threeStars: 21, twoStars: 30 },
+    },
 
-            const key = `${next.x},${next.y}`;
+    // LEVEL 9 - Advanced Gap
+    {
+        level: 9,
+        start: { x: 1, y: 1 },
+        apple: { x: 4, y: 5 },
+        portal: { x: 6, y: 3 },
+        obstacles: [
+            ...platform(2, 0, 2),
+            ...platform(6, 3, 5),
+            ...platform(4, 6, 7),
+        ],
+        starTarget: { threeStars: 23, twoStars: 32 },
+    },
 
-            if (
-                next.x >= 0 && next.x < 8 &&
-                next.y >= 0 && next.y < 8 &&
-                !blocked.has(key) &&
-                !visited.has(key)
-            ) {
-                visited.add(key);
-                queue.push(next);
-            }
-        }
-    }
+    // LEVEL 10 - Final Challenge
+    {
+        level: 10,
+        start: { x: 1, y: 3 },
+        apple: { x: 0, y: 3 },
+        portal: { x: 6, y: 5 },
+        obstacles: [
+            ...platform(4, 0, 2),
+            ...platform(2, 3, 5),
+            ...platform(6, 6, 7),
+        ],
+        starTarget: { threeStars: 25, twoStars: 35 },
+    },
 
-    return false;
-}
+    // LEVEL 11 - Zigzag Platforms
+    {
+        level: 11,
+        start: { x: 1, y: 1 },
+        apple: { x: 0, y: 1 },
+        portal: { x: 6, y: 5 },
+        obstacles: [
+            ...platform(2, 0, 3),
+            ...platform(4, 4, 7),
+            ...platform(6, 0, 2),
+        ],
+        starTarget: { threeStars: 27, twoStars: 38 },
+    },
 
-const testResults = levels.map((level, index) => {
-    const obstacles = level.obstacles || [];
+    // LEVEL 12 - Split Platforms
+    {
+        level: 12,
+        start: { x: 1, y: 2 },
+        apple: { x: 0, y: 2 },
+        portal: { x: 6, y: 6 },
+        obstacles: [
+            ...platform(3, 0, 2),
+            ...platform(5, 3, 5),
+            ...platform(7, 6, 7),
+            ...platform(6, 0, 1),
+        ],
+        starTarget: { threeStars: 29, twoStars: 40 },
+    },
 
-    const start = level.start;
-    const apple = level.apple;
-    const portal = level.portal;
+    // LEVEL 13 - Long Zigzag
+    {
+        level: 13,
+        start: { x: 2, y: 1 },
+        apple: { x: 1, y: 1 },
+        portal: { x: 6, y: 3 },
+        obstacles: [
+            ...platform(2, 0, 4),
+            ...platform(4, 3, 7),
+            ...platform(6, 0, 2),
+            ...platform(7, 5, 7),
+        ],
+        starTarget: { threeStars: 30, twoStars: 42 },
+    },
 
-    const obstacleSet = new Set(
-        obstacles.map(({ x, y }) => `${x},${y}`)
-    );
+    // LEVEL 14 - Narrow Path
+    {
+        level: 14,
+        start: { x: 1, y: 3 },
+        apple: { x: 0, y: 3 },
+        portal: { x: 6, y: 6 },
+        obstacles: [
+            ...platform(4, 0, 1),
+            ...platform(2, 2, 4),
+            ...platform(5, 5, 7),
+            ...platform(7, 0, 3),
+        ],
+        starTarget: { threeStars: 32, twoStars: 44 },
+    },
 
-    const isBlocked = (point) =>
-        obstacleSet.has(`${point.x},${point.y}`);
+    // LEVEL 15 - Double Gap
+    {
+        level: 15,
+        start: { x: 1, y: 1 },
+        apple: { x: 0, y: 1 },
+        portal: { x: 6, y: 5 },
+        obstacles: [
+            ...platform(2, 0, 2),
+            ...platform(4, 3, 5),
+            ...platform(6, 6, 7),
+            ...platform(5, 0, 1),
+        ],
+        starTarget: { threeStars: 34, twoStars: 46 },
+    },
 
-    const startValid = start && !isBlocked(start);
-    const appleValid = apple && !isBlocked(apple);
-    const portalValid = portal && !isBlocked(portal);
+    // LEVEL 16 - Multi-Level Platforms
+    {
+        level: 16,
+        start: { x: 2, y: 2 },
+        apple: { x: 1, y: 2 },
+        portal: { x: 6, y: 6 },
+        obstacles: [
+            ...platform(3, 0, 2),
+            ...platform(5, 3, 5),
+            ...platform(7, 6, 7),
+            ...platform(4, 6, 7),
+            ...platform(6, 0, 1),
+        ],
+        starTarget: { threeStars: 35, twoStars: 48 },
+    },
 
-    const appleReachable =
-        startValid && appleValid &&
-        canReach(start, apple, obstacles);
+    // LEVEL 17 - Tricky Route
+    {
+        level: 17,
+        start: { x: 1, y: 3 },
+        apple: { x: 0, y: 3 },
+        portal: { x: 6, y: 3 },
+        obstacles: [
+            ...platform(4, 0, 1),
+            ...platform(2, 2, 4),
+            ...platform(5, 5, 7),
+            ...platform(7, 2, 5),
+            ...platform(6, 0, 1),
+        ],
+        starTarget: { threeStars: 37, twoStars: 50 },
+    },
 
-    const portalReachable =
-        appleValid && portalValid &&
-        canReach(apple, portal, obstacles);
+    // LEVEL 18 - Multiple Gaps
+    {
+        level: 18,
+        start: { x: 2, y: 1 },
+        apple: { x: 1, y: 1 },
+        portal: { x: 6, y: 5 },
+        obstacles: [
+            ...platform(2, 0, 3),
+            ...platform(4, 4, 7),
+            ...platform(6, 1, 3),
+            ...platform(6, 5, 7),
+            ...platform(7, 0, 0),
+        ],
+        starTarget: { threeStars: 39, twoStars: 52 },
+    },
 
-    const passed =
-        startValid &&
-        appleValid &&
-        portalValid &&
-        appleReachable &&
-        portalReachable;
+    // LEVEL 19 - Expert Puzzle
+    {
+        level: 19,
+        start: { x: 1, y: 2 },
+        apple: { x: 0, y: 2 },
+        portal: { x: 6, y: 4 },
+        obstacles: [
+            ...platform(3, 0, 2),
+            ...platform(5, 3, 5),
+            ...platform(3, 6, 7),
+            ...platform(7, 0, 3),
+            ...platform(6, 5, 7),
+        ],
+        starTarget: { threeStars: 41, twoStars: 55 },
+    },
 
-    return {
-        level: index + 1,
-        result: passed ? "PASS" : "FAIL",
-        startValid,
-        appleValid,
-        portalValid,
-        appleReachable,
-        portalReachable
-    };
-});
+    // LEVEL 20 - Ultimate Challenge
+    {
+        level: 20,
+        start: { x: 1, y: 3 },
+        apple: { x: 0, y: 3 },
+        portal: { x: 6, y: 3 },
+        obstacles: [
+            ...platform(4, 0, 2),
+            ...platform(2, 3, 5),
+            ...platform(5, 5, 7),
+            ...platform(7, 0, 3),
+            ...platform(6, 6, 7),
+            ...platform(1, 4, 7),
+        ],
+        starTarget: { threeStars: 45, twoStars: 60 },
+    },
 
-console.table(testResults);
+    // LEVEL 21 - Floating Stone Bridge
+    {
+        level: 21,
+        start: { x: 1, y: 1 },
+        apple: { x: 0, y: 1 },
+        portal: { x: 6, y: 6 },
+        obstacles: [
+            ...platform(2, 0, 2),
+            ...platform(4, 3, 3),
+            ...platform(3, 4, 5),
+            ...platform(5, 6, 7),
+            ...platform(7, 5, 7),
+            ...platform(5, 1, 2),
+        ],
+        starTarget: { threeStars: 45, twoStars: 58 },
+    },
 
-console.log(
-    "Passed:",
-    testResults.filter(item => item.result === "PASS").length
-);
+    // LEVEL 22 - Broken Stone Path
+    {
+        level: 22,
+        start: { x: 2, y: 1 },
+        apple: { x: 1, y: 1 },
+        portal: { x: 6, y: 6 },
+        obstacles: [
+            ...platform(2, 1, 3),
+            ...platform(4, 4, 4),
+            ...platform(3, 5, 6),
+            ...platform(5, 1, 2),
+            ...platform(6, 3, 4),
+            ...platform(7, 6, 7),
+        ],
+        starTarget: { threeStars: 48, twoStars: 62 },
+    },
 
-console.log(
-    "Failed:",
-    testResults.filter(item => item.result === "FAIL").length
-);
+    // LEVEL 23 - High and Low Stones
+    {
+        level: 23,
+        start: { x: 1, y: 2 },
+        apple: { x: 0, y: 2 },
+        portal: { x: 7, y: 5 },
+        obstacles: [
+            ...platform(3, 0, 2),
+            ...platform(5, 3, 3),
+            ...platform(4, 4, 5),
+            ...platform(2, 5, 6),
+            ...platform(6, 6, 6),
+            ...platform(7, 5, 7),
+        ],
+        starTarget: { threeStars: 50, twoStars: 65 },
+    },
+
+    // LEVEL 24 - Zigzag Stone Bridge
+    {
+        level: 24,
+        start: { x: 2, y: 1 },
+        apple: { x: 1, y: 1 },
+        portal: { x: 6, y: 5 },
+        obstacles: [
+            ...platform(2, 1, 3),
+            ...platform(4, 4, 5),
+            ...platform(3, 6, 6),
+            ...platform(5, 1, 2),
+            ...platform(7, 0, 2),
+            ...platform(6, 5, 7),
+        ],
+        starTarget: { threeStars: 52, twoStars: 68 },
+    },
+
+    // LEVEL 25 - Floating Island Challenge
+    {
+        level: 25,
+        start: { x: 1, y: 3 },
+        apple: { x: 0, y: 3 },
+        portal: { x: 6, y: 1 },
+        obstacles: [
+            ...platform(4, 0, 2),
+            ...platform(6, 3, 3),
+            ...platform(5, 4, 5),
+            ...platform(3, 6, 7),
+            ...platform(2, 3, 4),
+            ...platform(7, 5, 7),
+        ],
+        starTarget: { threeStars: 54, twoStars: 70 },
+    },
+
+    // LEVEL 26 - Narrow Stone Route
+    {
+        level: 26,
+        start: { x: 2, y: 2 },
+        apple: { x: 1, y: 2 },
+        portal: { x: 7, y: 5 },
+        obstacles: [
+            ...platform(3, 1, 3),
+            ...platform(5, 4, 4),
+            ...platform(4, 5, 6),
+            ...platform(6, 7, 7),
+            ...platform(7, 4, 6),
+            ...platform(1, 5, 6),
+        ],
+        starTarget: { threeStars: 56, twoStars: 73 },
+    },
+
+    // LEVEL 27 - Double Floating Bridge
+    {
+        level: 27,
+        start: { x: 1, y: 1 },
+        apple: { x: 0, y: 1 },
+        portal: { x: 6, y: 6 },
+        obstacles: [
+            ...platform(2, 0, 2),
+            ...platform(4, 3, 4),
+            ...platform(3, 5, 5),
+            ...platform(5, 6, 7),
+            ...platform(7, 3, 5),
+            ...platform(6, 0, 1),
+        ],
+        starTarget: { threeStars: 58, twoStars: 76 },
+    },
+
+    // LEVEL 28 - Stepping Stone Maze
+    {
+        level: 28,
+        start: { x: 2, y: 1 },
+        apple: { x: 1, y: 1 },
+        portal: { x: 7, y: 4 },
+        obstacles: [
+            ...platform(2, 1, 3),
+            ...platform(4, 4, 4),
+            ...platform(3, 5, 6),
+            ...platform(5, 7, 7),
+            ...platform(6, 2, 3),
+            ...platform(7, 5, 7),
+            ...platform(5, 0, 1),
+        ],
+        starTarget: { threeStars: 60, twoStars: 78 },
+    },
+
+    // LEVEL 29 - Extreme Gap Challenge
+    {
+        level: 29,
+        start: { x: 1, y: 2 },
+        apple: { x: 0, y: 2 },
+        portal: { x: 5, y: 5 },
+        obstacles: [
+            ...platform(3, 0, 2),
+            ...platform(5, 3, 3),
+            ...platform(4, 4, 5),
+            ...platform(2, 5, 7),
+            ...platform(6, 6, 7),
+            ...platform(7, 3, 5),
+            ...platform(5, 0, 1),
+        ],
+        starTarget: { threeStars: 62, twoStars: 82 },
+    },
+
+    // LEVEL 30 - Ultimate Stone Puzzle
+    {
+        level: 30,
+        start: { x: 2, y: 1 },
+        apple: { x: 1, y: 1 },
+        portal: { x: 6, y: 6 },
+        obstacles: [
+            ...platform(2, 1, 3),
+            ...platform(4, 4, 4),
+            ...platform(3, 5, 6),
+            ...platform(5, 7, 7),
+            ...platform(6, 4, 5),
+            ...platform(7, 1, 3),
+            ...platform(5, 1, 2),
+            ...platform(1, 5, 6),
+        ],
+        starTarget: { threeStars: 65, twoStars: 85 },
+    },
+
+];
+
 export default levels;

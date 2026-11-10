@@ -186,9 +186,11 @@
     transform: rotate(0deg);
     z-index: 3;
 }
+
 .worm-falling-cell {
     transition: transform 0.7s cubic-bezier(0.45, 0, 0.8, 1);
 }
+
 /* Body */
 .worm-circle {
     display: block;
@@ -298,10 +300,13 @@
 
 .worm-circle.worm-tail.single-start-tail {
     position: absolute;
-    left: -48%;
+    width: 112%;
+    height: 78%;
+    left: -105%;
     top: 50%;
     transform: translateY(-50%);
     transform-origin: center;
+    z-index: 3;
 }
 
 .worm-circle.worm-tail:not(.portal-entering) {
