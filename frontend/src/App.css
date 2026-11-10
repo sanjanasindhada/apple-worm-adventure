@@ -685,3 +685,162 @@ button {
     align-items: center !important;
   }
 }
+
+.game-over-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: overlayFade 0.5s ease forwards;
+    backdrop-filter: blur(5px);
+}
+
+.game-over-box {
+    width: min(85%, 380px);
+    padding: 35px 25px;
+    text-align: center;
+    background: linear-gradient(145deg, #fff8d9, #d9f5b5);
+    border: 5px solid #579b36;
+    border-radius: 28px;
+    box-shadow: 0 10px 0 #286c2d,
+                0 15px 35px rgba(0, 0, 0, 0.4);
+    animation: popupZoom 0.65s cubic-bezier(.17,.89,.32,1.49);
+    position: relative;
+    overflow: hidden;
+}
+
+.game-over-box::before {
+    content: "✨";
+    position: absolute;
+    top: 15px;
+    left: 20px;
+    font-size: 25px;
+    animation: sparkle 1.5s infinite alternate;
+}
+
+.game-over-box::after {
+    content: "✨";
+    position: absolute;
+    bottom: 15px;
+    right: 20px;
+    font-size: 25px;
+    animation: sparkle 1.5s infinite alternate-reverse;
+}
+
+.game-over-icon {
+    font-size: 65px;
+    margin-bottom: 10px;
+    animation: sadBounce 1.2s ease-in-out infinite;
+}
+
+.game-over-box h2 {
+    color: #b83232;
+    font-size: 32px;
+    margin: 10px 0;
+    text-shadow: 2px 2px #ffd5a0;
+    animation: titleGlow 1.5s ease-in-out infinite alternate;
+}
+
+.game-over-box p {
+    color: #21452b;
+    font-size: 16px;
+    animation: textAppear 0.8s ease 0.3s both;
+}
+
+.game-over-box h3 {
+    color: #286c2d;
+    font-size: 23px;
+    margin: 20px 0;
+    animation: textAppear 0.8s ease 0.5s both;
+}
+
+.game-over-box .big-play-btn {
+    animation: buttonAppear 0.8s ease 0.6s both;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.game-over-box .big-play-btn:hover {
+    transform: translateY(-5px) scale(1.06);
+    box-shadow: 0 7px 0 #286c2d;
+}
+
+.game-over-box .big-play-btn:active {
+    transform: translateY(2px) scale(0.96);
+}
+
+@keyframes overlayFade {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes popupZoom {
+    0% {
+        transform: scale(0.3) rotate(-8deg);
+        opacity: 0;
+    }
+    70% {
+        transform: scale(1.08) rotate(2deg);
+    }
+    100% {
+        transform: scale(1) rotate(0);
+        opacity: 1;
+    }
+}
+
+@keyframes sadBounce {
+    0%, 100% {
+        transform: translateY(0) rotate(0);
+    }
+    50% {
+        transform: translateY(-10px) rotate(-8deg);
+    }
+}
+
+@keyframes titleGlow {
+    from {
+        text-shadow: 2px 2px #ffd5a0;
+    }
+    to {
+        text-shadow: 0 0 12px #ff9c65, 2px 2px #ffd5a0;
+    }
+}
+
+@keyframes sparkle {
+    from {
+        transform: scale(0.7) rotate(0deg);
+        opacity: 0.4;
+    }
+    to {
+        transform: scale(1.3) rotate(30deg);
+        opacity: 1;
+    }
+}
+
+@keyframes textAppear {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes buttonAppear {
+    from {
+        opacity: 0;
+        transform: scale(0.7);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}

@@ -1,230 +1,332 @@
+
 import './App.css';
-import { playSound } from "./utils/playSounds";
+
+import { useState, useEffect, useRef } from 'react';
+
 import GameBoard from './components/GameBoard';
 import GameControls from './components/GameControls';
-import levels from './data/Levels';
 import HomeScreen from './components/HomeScreen/HomeScreen';
 import LevelSelection from './components/LevelSelection/LevelSelection';
-import { useState, useEffect, useRef } from 'react';
-import { playClickSound } from './utils/playSounds';
+
+import levels from './data/Levels';
+
+import {
+    playSound,
+    playClickSound
+} from "./utils/playSounds";
+
 function App() {
-  const bgMusicRef = useRef(null);
 
-  const startBgMusic = () => {
-    if (!bgMusicRef.current) {
-      bgMusicRef.current = new Audio("/sounds/bg.mp3");
-      bgMusicRef.current.loop = true;
-      bgMusicRef.current.volume = 0.2;
-    }
+    const bgMusicRef = useRef(null);
 
-    bgMusicRef.current.play().catch((error) => {
-      console.log("Background music start nahi hua:", error);
-    });
-  };
+    const startBgMusic = () => {
+        if (!bgMusicRef.current) {
+            bgMusicRef.current = new Audio("/sounds/bg.mp3");
+            bgMusicRef.current.loop = true;
+            bgMusicRef.current.volume = 0.2;
+        }
 
-  useEffect(() => {
-    return () => {
-      if (bgMusicRef.current) {
-        bgMusicRef.current.pause();
-        bgMusicRef.current = null;
-      }
+        bgMusicRef.current.play().catch(error => {
+            console.log("Background music start nahi hua:", error);
+        });
     };
-  }, []);
 
-  const [currentLevel, setCurrentLevel] = useState(0);
-  const levelData = levels[currentLevel];
-  const initialWorm = [levelData.start];
+    useEffect(() => {
+        return () => {
+            if (bgMusicRef.current) {
+                bgMusicRef.current.pause();
+                bgMusicRef.current = null;
+            }
+        };
+    }, []);
 
-  const [worm, setWorm] = useState(initialWorm);
-  const [apple, setApple] = useState(levelData.apple);
-  const [score, setScore] = useState(0);
-  const [gameOver, setGameOver] = useState(false);
-  const [appleCollected, setAppleCollected] = useState(false);
-  const [levelComplete, setLevelComplete] = useState(false);
-  const [wormSize, setWormSize] = useState(1);
-  const [showNextLevelPrompt, setShowNextLevelPrompt] = useState(false);
-  const [screen, setScreen] = useState("home");
-  const [movesLeft, setMovesLeft] = useState(null);
-  const [portalEntering, setPortalEntering] = useState(false);
-  const [moves, setMoves] = useState(0);
-  const [earnedStars, setEarnedStars] = useState(0);
-  const [unlockedLevels, setUnlockedLevels] = useState(1);
+    const [currentLevel, setCurrentLevel] = useState(0);
 
-  const selectLevel = (index) => {
-    const selectedLevel = levels[index];
-    setMoves(0);
-    setEarnedStars(0);
-    setCurrentLevel(index);
-    setWorm([selectedLevel.start]);
-    setApple(selectedLevel.apple);
-    setScore(0);
-    setGameOver(false);
-    setAppleCollected(false);
-    setLevelComplete(false);
-    setShowNextLevelPrompt(false);
-    setWormSize(1);
-    setMovesLeft(null);
-    setPortalEntering(false);
-    setEarnedStars(0);
-    setScreen("game");
-  };
+    const levelData = levels[currentLevel];
 
-  const goToNextLevel = () => {
-    setUnlockedLevels((prev) =>
-      Math.max(prev, currentLevel + 2)
-    );
-    const target = levelData.starTarget;
-    let stars = 1;
-    if (moves <= target.threeStars) {
-      stars = 3;
-    }
-    else if (moves <= target.twoStars) {
-      stars = 2;
-    }
-    setEarnedStars(stars);
-    if (currentLevel < levels.length - 1) {
-      playSound("win");
-      setShowNextLevelPrompt(true);
-      setLevelComplete(true);
-    }
-  };
+    const initialWorm = [levelData.start];
 
-  const playNextLevel = () => {
-    const nextLevel = currentLevel + 1;
-    const nextLevelData = levels[nextLevel];
+    const [worm, setWorm] = useState(initialWorm);
+    const [apple, setApple] = useState(levelData.apple);
 
-    setCurrentLevel(nextLevel);
-    setWorm([nextLevelData.start]);
-    setApple(nextLevelData.apple);
-    setScore(0);
-    setAppleCollected(false);
-    setLevelComplete(false);
-    setShowNextLevelPrompt(false);
-    setGameOver(false);
-    setWormSize(1);
-    setMovesLeft(null);
-    setPortalEntering(false);
-    setMoves(0);
-    setEarnedStars(0);
-  };
+    const [score, setScore] = useState(0);
+    const [gameOver, setGameOver] = useState(false);
 
-  return (
-    <>
-      {screen === "home" && (
-        <HomeScreen
-          onPlay={() => {
-            startBgMusic();
-            setScreen("levels");
-          }}
-        />
-      )}
+    const [appleCollected, setAppleCollected] = useState(false);
+    const [levelComplete, setLevelComplete] = useState(false);
 
-      {screen === "levels" && (
-        <LevelSelection
-          levels={levels}
-          onBack={() => setScreen("home")}
-          onSelectLevel={selectLevel}
-          unlockedLevels={unlockedLevels}
-        />
-      )}
+    const [wormSize, setWormSize] = useState(1);
 
-      {screen === "game" && (
-        <div className="game-container">
-          <button
-            className="back-button"
-            onClick={() => {
-              setScreen("levels");
-              playClickSound();
-            }}
-          >
-            ← Back to Levels
-          </button>
-          <h1>🍎 Apple Worm Adventure</h1>
+    const [showNextLevelPrompt, setShowNextLevelPrompt] = useState(false);
 
-          <p>Collect apples and grow your worm!</p>
+    const [screen, setScreen] = useState("home");
 
-          <h3>Level {levelData.level} | Score: {score}</h3>
+    const [movesLeft, setMovesLeft] = useState(null);
 
-          {gameOver && !levelComplete && (
-            <h2>Game Over! Try Again 🎮</h2>
-          )}
+    const [portalEntering, setPortalEntering] = useState(false);
 
-          {showNextLevelPrompt && (
-            <div className="level-prompt">
-              <div className="celebration">🎉 🎊 🎉</div>
+    const [moves, setMoves] = useState(0);
 
-              <h2>Level Complete!</h2>
+    const [earnedStars, setEarnedStars] = useState(0);
 
-              {/* Earned Stars */}
-              <div className="earned-stars">
-                {"⭐".repeat(earnedStars)}
-              </div>
+    const [unlockedLevels, setUnlockedLevels] = useState(1);
 
-              <p>You completed the level in {moves} moves!</p>
-              <p>Ready for the next challenge?</p>
+    // Falling state
+    const [falling, setFalling] = useState(false);
+    const [fallDistance, setFallDistance] = useState(0);
+    const [fallingWorm, setFallingWorm] = useState(null);
+    const [showGameOver, setShowGameOver] = useState(false);
+    const resetLevel = (selectedLevel) => {
+        setWorm([selectedLevel.start]);
+        setApple(selectedLevel.apple);
 
-              {currentLevel < levels.length - 1 ? (
-                <button
-                  className="big-play-btn"
-                  onClick={() => {
-                    playNextLevel();
-                    playClickSound();
-                  }}
-                >
-                  ▶ PLAY LEVEL {levelData.level + 1}
-                </button>
-              ) : (
-                <h2>🏆 All Levels Completed!</h2>
-              )}
-            </div>
-          )}
+        setScore(0);
+        setMoves(0);
 
-          {!showNextLevelPrompt && (
-            <div className="game-layout">
-              <GameBoard
-                worm={worm}
-                apple={apple}
-                portal={levelData.portal}
-                obstacles={levelData.obstacles}
-                appleCollected={appleCollected}
-                wormSize={wormSize}
-                portalEntering={portalEntering}
-                setPortalEntering={setPortalEntering}
-              />
+        setGameOver(false);
+        setAppleCollected(false);
+        setLevelComplete(false);
 
-              <div className="side-controls">
-                <GameControls
-                  moves={moves}
-                  setMoves={setMoves}
-                  setLevelComplete={setLevelComplete}
-                  levelComplete={levelComplete}
-                  setScore={setScore}
-                  setWorm={setWorm}
-                  setApple={setApple}
-                  apple={apple}
-                  worm={worm}
-                  score={score}
-                  initialWorm={initialWorm}
-                  gameOver={gameOver}
-                  setGameOver={setGameOver}
-                  appleCollected={appleCollected}
-                  setAppleCollected={setAppleCollected}
-                  obstacles={levelData.obstacles}
-                  setWormSize={setWormSize}
-                  goToNextLevel={goToNextLevel}
-                  initialApple={levelData.apple}
-                  movesLeft={movesLeft}
-                  setMovesLeft={setMovesLeft}
-                  setPortalEntering={setPortalEntering}
-                  portal={levelData.portal}
+        setShowNextLevelPrompt(false);
+        setWormSize(1);
+
+        setMovesLeft(null);
+        setPortalEntering(false);
+
+        setFalling(false);
+        setFallDistance(0);
+        setFallingWorm(null);
+
+        setEarnedStars(0);
+    };
+    useEffect(() => {
+        if (gameOver) {
+            setShowGameOver(false);
+
+            const timer = setTimeout(() => {
+                setShowGameOver(true);
+            }, 1000);
+
+            return () => clearTimeout(timer);
+        } else {
+            setShowGameOver(false);
+        }
+    }, [gameOver]);
+    const selectLevel = (index) => {
+        const selectedLevel = levels[index];
+
+        setCurrentLevel(index);
+        resetLevel(selectedLevel);
+
+        setScreen("game");
+    };
+
+    const goToNextLevel = () => {
+
+        setUnlockedLevels(prev =>
+            Math.max(prev, currentLevel + 2)
+        );
+
+        const target = levelData.starTarget;
+
+        let stars = 1;
+
+        if (moves <= target.threeStars) {
+            stars = 3;
+        } else if (moves <= target.twoStars) {
+            stars = 2;
+        }
+
+        setEarnedStars(stars);
+
+        if (currentLevel < levels.length - 1) {
+            playSound("win");
+
+            setShowNextLevelPrompt(true);
+            setLevelComplete(true);
+        }
+    };
+
+    const playNextLevel = () => {
+        const nextLevel = currentLevel + 1;
+
+        const nextLevelData = levels[nextLevel];
+
+        setCurrentLevel(nextLevel);
+        resetLevel(nextLevelData);
+    };
+
+    return (
+        <>
+            {screen === "home" && (
+                <HomeScreen
+                    onPlay={() => {
+                        startBgMusic();
+                        setScreen("levels");
+                    }}
                 />
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-    </>
-  );
+            )}
+
+            {screen === "levels" && (
+                <LevelSelection
+                    levels={levels}
+                    onBack={() => setScreen("home")}
+                    onSelectLevel={selectLevel}
+                    unlockedLevels={unlockedLevels}
+                />
+            )}
+
+            {screen === "game" && (
+                <div className="game-container">
+
+                    {/* GAME CONTENT - Hide when game over */}
+
+                    {!gameOver && (
+                        <>
+
+                            <button
+                                className="back-button"
+                                onClick={() => {
+                                    setScreen("levels");
+                                    playClickSound();
+                                }}
+                            >
+                                ← Back to Levels
+                            </button>
+
+                            <h1>🍎 Apple Worm Adventure</h1>
+
+                            <p>Collect apples and grow your worm!</p>
+
+                            <h3>
+                                Level {levelData.level} | Score: {score}
+                            </h3>
+
+                            {showNextLevelPrompt && (
+                                <div className="level-prompt">
+
+                                    <div className="celebration">
+                                        🎉 🎊 🎉
+                                    </div>
+
+                                    <h2>Level Complete!</h2>
+
+                                    <div className="earned-stars">
+                                        {"⭐".repeat(earnedStars)}
+                                    </div>
+
+                                    <p>
+                                        You completed the level in {moves} moves!
+                                    </p>
+
+                                    <p>Ready for the next challenge?</p>
+
+                                    {currentLevel < levels.length - 1 ? (
+                                        <button
+                                            className="big-play-btn"
+                                            onClick={() => {
+                                                playNextLevel();
+                                                playClickSound();
+                                            }}
+                                        >
+                                            ▶ PLAY LEVEL {levelData.level + 1}
+                                        </button>
+                                    ) : (
+                                        <h2>🏆 All Levels Completed!</h2>
+                                    )}
+
+                                </div>
+                            )}
+
+                            {!showNextLevelPrompt && (
+                                <div className="game-layout">
+
+                                    <GameBoard
+                                        worm={worm}
+                                        apple={apple}
+                                        portal={levelData.portal}
+                                        obstacles={levelData.obstacles}
+                                        appleCollected={appleCollected}
+                                        wormSize={wormSize}
+                                        portalEntering={portalEntering}
+                                        falling={falling}
+                                        fallDistance={fallDistance}
+                                        fallingWorm={fallingWorm}
+                                    />
+
+                                    <div className="side-controls">
+
+                                        <GameControls
+                                            setMoves={setMoves}
+                                            setLevelComplete={setLevelComplete}
+                                            setScore={setScore}
+                                            setWorm={setWorm}
+                                            setApple={setApple}
+                                            apple={apple}
+                                            worm={worm}
+                                            score={score}
+                                            initialWorm={initialWorm}
+                                            initialApple={levelData.apple}
+                                            gameOver={gameOver}
+                                            setGameOver={setGameOver}
+                                            appleCollected={appleCollected}
+                                            setAppleCollected={setAppleCollected}
+                                            obstacles={levelData.obstacles}
+                                            setWormSize={setWormSize}
+                                            goToNextLevel={goToNextLevel}
+                                            setPortalEntering={setPortalEntering}
+                                            portal={levelData.portal}
+                                            falling={falling}
+                                            setFalling={setFalling}
+                                            fallDistance={fallDistance}
+                                            setFallDistance={setFallDistance}
+                                            fallingWorm={fallingWorm}
+                                            setFallingWorm={setFallingWorm}
+                                        />
+
+                                    </div>
+                                </div>
+                            )}
+
+                        </>
+                    )}
+
+                    {/* GAME OVER SCREEN */}
+
+                    {showGameOver && (
+                        <div className="game-over-overlay">
+
+                            <div className="game-over-box">
+
+                                <div className="game-over-icon">
+                                    🥺
+                                </div>
+
+                                <h2>GAME OVER!</h2>
+
+                                <p>Your worm needs another chance!</p>
+
+                                <h3>🍎 Score: {score}</h3>
+
+                                <button
+                                    className="big-play-btn"
+                                    onClick={() => {
+                                        resetLevel(levelData);
+                                        playClickSound();
+                                    }}
+                                >
+                                    🔄 RESTART
+                                </button>
+
+                            </div>
+
+                        </div>
+                    )}
+
+                </div>
+            )}
+        </>
+    );
 }
 
 export default App;

@@ -30,24 +30,27 @@
     border: none;
 }
 
-/* 3D Obstacles */
 .wall-cell {
     position: relative;
-    z-index: 1;
+    z-index: 2;
     overflow: visible;
+
     background: linear-gradient(145deg,
-            #e0ad70 0%,
+            #f0bd80 0%,
             #bd8248 35%,
             #92572e 75%,
             #70401f 100%);
+
     border: 1px solid #633817;
-    border-radius: 3px;
+    border-radius: 4px;
+
     box-shadow:
         inset 3px 3px 4px rgba(255, 225, 175, 0.65),
         inset -3px -3px 5px rgba(55, 25, 5, 0.5),
-        0 3px 0 #603817,
-        0 5px 5px rgba(0, 0, 0, 0.35);
-    transform: translateY(-2px);
+        0 4px 0 #603817,
+        0 7px 7px rgba(0, 0, 0, 0.35);
+
+    transform: translateY(-3px);
 }
 
 .wall-top {
@@ -84,13 +87,14 @@
 
 /* Worm Head */
 .worm-head {
+    z-index: 4;
     isolation: isolate;
-    width: 125%;
-    height: 110%;
+    width: 105%;
+    height: 95%;
     position: relative;
     overflow: visible;
     display: block;
-    border-radius: 45% 55% 48% 52%;
+    border-radius: 48% 48% 42% 42%;
     z-index: 4;
     background: radial-gradient(circle at 35% 25%,
             #b8f779,
@@ -108,46 +112,83 @@
 /* Eyes */
 .worm-eye {
     position: absolute;
-    top: 12%;
-    width: 34%;
-    height: 42%;
+    top: 15%;
+    width: 30%;
+    height: 38%;
     background: white;
-    border: 2px solid #111;
+    border: 1px solid #17451b;
     border-radius: 50%;
     z-index: 2;
+    overflow: hidden;
 }
 
 .left-eye {
-    left: 12%;
+    left: 17%;
 }
 
 .right-eye {
-    right: 12%;
+    right: 17%;
 }
 
 .worm-eye::after {
     content: "";
     position: absolute;
     width: 55%;
-    height: 60%;
-    top: 20%;
+    height: 58%;
+    top: 18%;
     left: 25%;
-    background: #050505;
+    background: #111;
     border-radius: 50%;
+}
+
+.worm-eye::before {
+    content: "";
+    position: absolute;
+    width: 25%;
+    height: 25%;
+    top: 20%;
+    left: 55%;
+    background: white;
+    border-radius: 50%;
+    z-index: 2;
+}
+
+.worm-cheek {
+    position: absolute;
+    width: 15%;
+    height: 9%;
+    top: 58%;
+    background: radial-gradient(circle,
+            #ff8fa3 0%,
+            #ffb3bd 65%,
+            transparent 100%);
+    border-radius: 50%;
+    z-index: 2;
+}
+
+.left-cheek {
+    left: 10%;
+}
+
+.right-cheek {
+    right: 10%;
 }
 
 /* Smile */
 .worm-smile {
     position: absolute;
-    width: 22%;
-    height: 12%;
-    left: 39%;
-    top: 65%;
-    border-bottom: 4px solid #061c08;
-    border-radius: 50%;
-    z-index: 2;
+    width: 24%;
+    height: 14%;
+    left: 38%;
+    top: 63%;
+    border-bottom: 3px solid #17451b;
+    border-radius: 0 0 50% 50%;
+    transform: rotate(0deg);
+    z-index: 3;
 }
-
+.worm-falling-cell {
+    transition: transform 0.7s cubic-bezier(0.45, 0, 0.8, 1);
+}
 /* Body */
 .worm-circle {
     display: block;
@@ -209,27 +250,29 @@
 
 .single-tail {
     position: absolute;
-    width: 70%;
-    height: 75%;
-    left: -55%;
+    width: 65%;
+    height: 42%;
+    left: -42%;
     top: 50%;
+
     transform: translateY(-50%);
+
     border-radius: 50%;
 
-    background: radial-gradient(ellipse at 35% 25%,
-            #b8f779,
-            #65c83d 60%,
-            #287c20);
+    background: radial-gradient(ellipse at 65% 30%,
+            #c4ff85 0%,
+            #8be052 30%,
+            #65c83d 70%,
+            #287c20 100%);
 
     box-shadow:
-        inset 0 3px 5px rgba(255, 255, 255, 0.3),
-        inset 0 -3px 5px rgba(0, 70, 0, 0.25);
+        inset 1px 2px 4px rgba(255, 255, 255, 0.4),
+        inset -2px -2px 4px rgba(0, 70, 0, 0.3),
+        0 2px 3px rgba(0, 0, 0, 0.2);
 
     z-index: 3;
-    display: block;
     pointer-events: none;
 }
-
 
 /* Tail after body grows */
 .worm-circle.worm-tail {
@@ -251,6 +294,14 @@
 
     z-index: 3;
     animation: none;
+}
+
+.worm-circle.worm-tail.single-start-tail {
+    position: absolute;
+    left: -48%;
+    top: 50%;
+    transform: translateY(-50%);
+    transform-origin: center;
 }
 
 .worm-circle.worm-tail:not(.portal-entering) {
@@ -436,4 +487,40 @@
     .portal-entering {
         animation: none;
     }
+}
+
+.worm-circle.worm-tail.single-start-tail {
+    position: absolute;
+    width: 112%;
+    height: 78%;
+    left: -48%;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 3;
+    pointer-events: none;
+}
+
+.worm-head,
+.worm-circle.worm-tail {
+    flex-shrink: 0;
+}
+
+.worm-brow {
+    position: absolute;
+    top: 8%;
+    width: 18%;
+    height: 5%;
+    background: #287c20;
+    border-radius: 50%;
+    z-index: 3;
+}
+
+.left-brow {
+    left: 18%;
+    transform: rotate(-12deg);
+}
+
+.right-brow {
+    right: 18%;
+    transform: rotate(12deg);
 }

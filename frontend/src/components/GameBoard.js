@@ -8,6 +8,9 @@ function GameBoard({
     obstacles = [],
     appleCollected = false,
     portalEntering = false,
+    falling = false,
+    fallDistance = 0,
+    fallingWorm = null,
 }) {
     const isWall = (x, y) =>
         obstacles.some(
@@ -20,17 +23,27 @@ function GameBoard({
                 const x = index % 8;
                 const y = Math.floor(index / 8);
 
+                const displayWorm = worm;
+
                 const isHead =
-                    worm.length > 0 &&
-                    worm[0].x === x &&
-                    worm[0].y === y;
-                const isSingleWorm = worm.length === 1;
-                const isWorm = worm.some(
-                    (part) => part.x === x && part.y === y
+                    displayWorm.length > 0 &&
+                    displayWorm[0].x === x &&
+                    displayWorm[0].y === y;
+
+                const isSingleWorm = displayWorm.length === 1;
+
+                const isWorm = displayWorm.some(
+                    part => part.x === x && part.y === y
                 );
 
-                const isApple = apple.x === x && apple.y === y;
-                const isPortal = portal.x === x && portal.y === y;
+                const isFallingWorm = falling && isWorm;
+
+                const isApple =
+                    apple?.x === x && apple?.y === y;
+
+                const isPortal =
+                    portal.x === x && portal.y === y;
+
                 const isObstacle = isWall(x, y);
 
                 const wallClasses = isObstacle
@@ -39,19 +52,23 @@ function GameBoard({
                         !isWall(x, y + 1) && "wall-bottom",
                         !isWall(x - 1, y) && "wall-left",
                         !isWall(x + 1, y) && "wall-right",
-                    ].filter(Boolean).join(" ")
+                    ]
+                        .filter(Boolean)
+                        .join(" ")
                     : "";
+
                 const isTail =
-                    worm.length > 1 &&
-                    worm[worm.length - 1].x === x &&
-                    worm[worm.length - 1].y === y;
-                const tailIndex = worm.length - 1;
+                    displayWorm.length > 1 &&
+                    displayWorm[displayWorm.length - 1].x === x &&
+                    displayWorm[displayWorm.length - 1].y === y;
+
+                const tailIndex = displayWorm.length - 1;
 
                 const tailAngle =
-                    worm.length > 1
+                    displayWorm.length > 1
                         ? Math.atan2(
-                            worm[tailIndex].y - worm[tailIndex - 1].y,
-                            worm[tailIndex].x - worm[tailIndex - 1].x
+                            displayWorm[tailIndex].y - displayWorm[tailIndex - 1].y,
+                            displayWorm[tailIndex].x - displayWorm[tailIndex - 1].x
                         ) * (180 / Math.PI)
                         : 0;
                 return (
@@ -60,29 +77,51 @@ function GameBoard({
                         className={`cell ${isObstacle
                             ? `wall-cell ${wallClasses}`
                             : "empty-cell"
+                            } ${isFallingWorm
+                                ? "worm-falling-cell"
+                                : ""
                             }`}
+                        style={
+                            isFallingWorm
+                                ? { transform: `translateY(${fallDistance * 100}%)` }
+                                : {}
+                        }
                     >
                         {isHead ? (
                             <>
                                 {isSingleWorm && (
-                                    <span className="single-tail" />
+                                    <span className="worm-circle worm-tail" />
                                 )}
-
-                                <span className={`worm-head ${portalEntering ? "portal-entering" : ""}`}>
+                                <span
+                                    className={`worm-head ${portalEntering ? "portal-entering" : ""
+                                        }`}
+                                >
                                     <span className="worm-antenna left-antenna" />
                                     <span className="worm-antenna right-antenna" />
-                                    <span className="worm-eye left-eye"></span>
-                                    <span className="worm-eye right-eye"></span>
-                                    <span className="worm-smile"></span>
+                                    <span className="worm-brow left-brow" />
+                                    <span className="worm-brow right-brow" />
+                                    <span className="worm-eye left-eye" />
+                                    <span className="worm-eye right-eye" />
+
+                                    <span className="worm-smile" />
+                                    <span className="worm-cheek left-cheek" />
+                                    <span className="worm-cheek right-cheek" />
                                 </span>
                             </>
                         ) : isWorm ? (
                             <span
-                                className={`worm-circle ${portalEntering ? "portal-entering" : ""
-                                    } ${isTail ? "worm-tail" : "worm-body-segment"}`}
+                                className={`worm-circle ${portalEntering
+                                    ? "portal-entering"
+                                    : ""
+                                    } ${isTail
+                                        ? "worm-tail"
+                                        : "worm-body-segment"
+                                    }`}
                                 style={
                                     isTail
-                                        ? { "--tail-angle": `${tailAngle}deg` }
+                                        ? {
+                                            "--tail-angle": `${tailAngle}deg`,
+                                        }
                                         : {}
                                 }
                             >
@@ -95,17 +134,20 @@ function GameBoard({
                             </span>
                         ) : isApple ? (
                             <span className="apple-item">🍎</span>
-                        ) : isObstacle ? (
-                            ""
                         ) : isPortal ? (
-                            <span className={`portal ${appleCollected ? "portal-active" : ""}`}>
+                            <span
+                                className={`portal ${appleCollected
+                                    ? "portal-active"
+                                    : ""
+                                    }`}
+                            >
                                 🌀
                             </span>
-                        ) : ""}
+                        ) : null}
                     </div>
                 );
             })}
-        </div >
+        </div>
     );
 }
 

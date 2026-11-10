@@ -360,11 +360,18 @@ const levels = Array.from({ length: 50 }, (_, index) => {
             const onObstacle = obstacles.some(
                 (obstacle) => obstacle.x === x && obstacle.y === y
             );
-
+            const hasPlatformBelow = obstacles.some(
+                (obstacle) => obstacle.x === x && obstacle.y === y + 1
+            );
             const onStart = x === 1 && y === 1;
             const onPortal = x === portal.x && y === portal.y;
 
-            if (!onObstacle && !onStart && !onPortal) {
+            if (
+                !onObstacle &&
+                !onStart &&
+                !onPortal &&
+                hasPlatformBelow
+            ) {
                 availablePositions.push({ x, y });
             }
         }
