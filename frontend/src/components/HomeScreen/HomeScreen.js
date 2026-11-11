@@ -1,18 +1,27 @@
 import { playClickSound } from "../../utils/playSounds";
 import "./HomeScreen.css";
 
-function HomeScreen({ onPlay }) {
+function HomeScreen({ onPlay, onAdmin }) {
     return (
         <div className="home-screen">
             <button
                 className="play-button"
-                onClick={()=>{
+                onClick={() => {
                     onPlay();
                     playClickSound();
                 }}
                 aria-label="Play game"
             >
-                ▶ Play 
+                ▶ Play
+            </button>
+            <button
+                className="admin-button"
+                onClick={() => {
+                    onAdmin();
+                    playClickSound();
+                }}
+            >
+                ⚙ Admin Dashboard
             </button>
         </div>
     );

@@ -1,476 +1,392 @@
 
-const platform = (y, startX, endX) =>
-    Array.from(
-        { length: endX - startX + 1 },
-        (_, i) => ({ x: startX + i, y })
-    );
+const ROWS = 12;
+const COLUMNS = 16;
+
+const makeCells = (coords = []) =>
+    coords.map(([x, y]) => ({ x, y }));
+
+const makeLevel = (
+    level,
+    name,
+    start,
+    apple,
+    portal,
+    obstacleCoords = [],
+    stoneCoords = [],
+    thornCoords = []
+) => {
+    const obstacles = [...obstacleCoords];
+
+    // Start, apple aur portal ke neeche support
+    [start, apple, portal].forEach(({ x, y }) => {
+        if (y < ROWS - 1) {
+            const alreadyExists = obstacles.some(
+                ([ox, oy]) => ox === x && oy === y + 1
+            );
+
+            if (!alreadyExists) {
+                obstacles.push([x, y + 1]);
+            }
+        }
+    });
+
+    return {
+        level,
+        name,
+        rows: ROWS,
+        columns: COLUMNS,
+
+        start,
+        initialWorm: [start],
+
+        apple,
+        initialApple: apple,
+
+        portal,
+
+        obstacles: makeCells(obstacles),
+        stones: makeCells(stoneCoords),
+        initialStones: makeCells(stoneCoords),
+        thorns: makeCells(thornCoords),
+
+        starTarget: {
+            threeStars: 15,
+            twoStars: 25,
+        },
+    };
+};
 
 const levels = [
-    // LEVEL 1 - Beginner
-    {
-        level: 1,
-        start: { x: 1, y: 1 },
-        apple: { x: 3, y: 1 },
-        portal: { x: 6, y: 3 },
-        obstacles: [
-            ...platform(2, 0, 5),
-            ...platform(4, 6, 7),
-        ],
-        starTarget: { threeStars: 12, twoStars: 18 },
-    },
 
-    // LEVEL 2 - Small Gap
-    {
-        level: 2,
-        start: { x: 1, y: 1 },
-        apple: { x: 4, y: 3 },
-        portal: { x: 6, y: 5 },
-        obstacles: [
-            ...platform(2, 0, 2),
-            ...platform(4, 3, 5),
-            ...platform(6, 6, 7),
-        ],
-        starTarget: { threeStars: 14, twoStars: 20 },
-    },
+    // =========================
+    // LEVEL 1–10: BASIC PUZZLES
+    // =========================
 
-    // LEVEL 3 - Long Platform
-    {
-        level: 3,
-        start: { x: 1, y: 2 },
-        apple: { x: 4, y: 4 },
-        portal: { x: 6, y: 4 },
-        obstacles: [
-            ...platform(3, 0, 2),
-            ...platform(5, 3, 7),
-        ],
-        starTarget: { threeStars: 15, twoStars: 22 },
-    },
+    makeLevel(1, "First Steps",
+        {x:1,y:1}, {x:3,y:1}, {x:8,y:8},
+        [[1,2],[2,2],[3,2],[4,2],[5,2],[6,2],[7,2],[8,9]]
+    ),
 
-    // LEVEL 4 - Stepping Platforms
-    {
-        level: 4,
-        start: { x: 0, y: 1 },
-        apple: { x: 3, y: 2 },
-        portal: { x: 6, y: 4 },
-        obstacles: [
-            ...platform(2, 0, 1),
-            ...platform(3, 2, 4),
-            ...platform(5, 5, 7),
-        ],
-        starTarget: { threeStars: 16, twoStars: 23 },
-    },
+    makeLevel(2, "Small Gap",
+        {x:1,y:1}, {x:4,y:1}, {x:10,y:8},
+        [[1,2],[2,2],[3,2],[4,2],[7,5],[8,5],[9,5],[10,9]]
+    ),
 
-    // LEVEL 5 - Long Route
-    {
-        level: 5,
-        start: { x: 1, y: 3 },
-        apple: { x: 4, y: 3 },
-        portal: { x: 6, y: 5 },
-        obstacles: [
-            ...platform(4, 0, 5),
-            ...platform(6, 6, 7),
-        ],
-        starTarget: { threeStars: 18, twoStars: 25 },
-    },
+    makeLevel(3, "High Platform",
+        {x:2,y:2}, {x:5,y:2}, {x:12,y:6},
+        [[2,3],[3,3],[4,3],[5,3],[7,7],[8,7],[9,7],[10,7],[11,7],[12,7]]
+    ),
 
-    // LEVEL 6 - Wide Gap
-    {
-        level: 6,
-        start: { x: 1, y: 1 },
-        apple: { x: 5, y: 3 },
-        portal: { x: 6, y: 3 },
-        obstacles: [
-            ...platform(2, 0, 3),
-            ...platform(4, 4, 7),
-        ],
-        starTarget: { threeStars: 18, twoStars: 26 },
-    },
+    makeLevel(4, "Stepping Stones",
+        {x:1,y:1}, {x:3,y:1}, {x:12,y:8},
+        [[1,2],[2,2],[3,2],[5,6],[6,6],[8,4],[9,4],[11,7],[12,9]]
+    ),
 
-    // LEVEL 7 - Different Heights
-    {
-        level: 7,
-        start: { x: 1, y: 2 },
-        apple: { x: 4, y: 4 },
-        portal: { x: 6, y: 2 },
-        obstacles: [
-            ...platform(3, 0, 2),
-            ...platform(3, 5, 7),
-            ...platform(5, 3, 5),
-        ],
-        starTarget: { threeStars: 20, twoStars: 28 },
-    },
+    makeLevel(5, "Long Journey",
+        {x:1,y:2}, {x:4,y:2}, {x:14,y:8},
+        [[1,3],[2,3],[3,3],[4,3],[5,7],[6,7],[7,7],[9,5],[10,5],[11,5],[14,9]]
+    ),
 
-    // LEVEL 8 - Multiple Platforms
-    {
-        level: 8,
-        start: { x: 0, y: 4 },
-        apple: { x: 0, y: 3 },
-        portal: { x: 6, y: 4 },
-        obstacles: [
-            ...platform(5, 0, 1),
-            ...platform(3, 2, 4),
-            ...platform(5, 5, 7),
-        ],
-        starTarget: { threeStars: 21, twoStars: 30 },
-    },
+    makeLevel(6, "Double Platform",
+        {x:2,y:1}, {x:5,y:1}, {x:12,y:8},
+        [[2,2],[3,2],[4,2],[5,2],[7,5],[8,5],[9,5],[10,5],[12,9]]
+    ),
 
-    // LEVEL 9 - Advanced Gap
-    {
-        level: 9,
-        start: { x: 1, y: 1 },
-        apple: { x: 4, y: 5 },
-        portal: { x: 6, y: 3 },
-        obstacles: [
-            ...platform(2, 0, 2),
-            ...platform(6, 3, 5),
-            ...platform(4, 6, 7),
-        ],
-        starTarget: { threeStars: 23, twoStars: 32 },
-    },
+    makeLevel(7, "The Stairway",
+        {x:1,y:1}, {x:3,y:1}, {x:12,y:7},
+        [[1,2],[2,2],[3,2],[5,7],[6,6],[7,5],[8,4],[9,4],[10,5],[11,6],[12,8]]
+    ),
 
-    // LEVEL 10 - Final Challenge
-    {
-        level: 10,
-        start: { x: 1, y: 3 },
-        apple: { x: 0, y: 3 },
-        portal: { x: 6, y: 5 },
-        obstacles: [
-            ...platform(4, 0, 2),
-            ...platform(2, 3, 5),
-            ...platform(6, 6, 7),
-        ],
-        starTarget: { threeStars: 25, twoStars: 35 },
-    },
+    makeLevel(8, "Broken Road",
+        {x:2,y:2}, {x:5,y:2}, {x:13,y:8},
+        [[2,3],[3,3],[4,3],[5,3],[7,7],[8,7],[10,5],[11,5],[13,9]]
+    ),
 
-    // LEVEL 11 - Zigzag Platforms
-    {
-        level: 11,
-        start: { x: 1, y: 1 },
-        apple: { x: 0, y: 1 },
-        portal: { x: 6, y: 5 },
-        obstacles: [
-            ...platform(2, 0, 3),
-            ...platform(4, 4, 7),
-            ...platform(6, 0, 2),
-        ],
-        starTarget: { threeStars: 27, twoStars: 38 },
-    },
+    makeLevel(9, "The Bridge",
+        {x:1,y:1}, {x:4,y:1}, {x:14,y:6},
+        [[1,2],[2,2],[3,2],[4,2],[6,5],[7,5],[8,5],[9,5],[10,5],[12,7],[13,7],[14,7]]
+    ),
 
-    // LEVEL 12 - Split Platforms
-    {
-        level: 12,
-        start: { x: 1, y: 2 },
-        apple: { x: 0, y: 2 },
-        portal: { x: 6, y: 6 },
-        obstacles: [
-            ...platform(3, 0, 2),
-            ...platform(5, 3, 5),
-            ...platform(7, 6, 7),
-            ...platform(6, 0, 1),
-        ],
-        starTarget: { threeStars: 29, twoStars: 40 },
-    },
+    makeLevel(10, "Final Beginner",
+        {x:2,y:2}, {x:5,y:2}, {x:14,y:8},
+        [[2,3],[3,3],[4,3],[5,3],[7,7],[8,7],[9,7],[10,7],[12,5],[13,5],[14,9]]
+    ),
 
-    // LEVEL 13 - Long Zigzag
-    {
-        level: 13,
-        start: { x: 2, y: 1 },
-        apple: { x: 1, y: 1 },
-        portal: { x: 6, y: 3 },
-        obstacles: [
-            ...platform(2, 0, 4),
-            ...platform(4, 3, 7),
-            ...platform(6, 0, 2),
-            ...platform(7, 5, 7),
-        ],
-        starTarget: { threeStars: 30, twoStars: 42 },
-    },
+    // =========================
+    // LEVEL 11–20: STONE PUZZLES
+    // =========================
 
-    // LEVEL 14 - Narrow Path
-    {
-        level: 14,
-        start: { x: 1, y: 3 },
-        apple: { x: 0, y: 3 },
-        portal: { x: 6, y: 6 },
-        obstacles: [
-            ...platform(4, 0, 1),
-            ...platform(2, 2, 4),
-            ...platform(5, 5, 7),
-            ...platform(7, 0, 3),
-        ],
-        starTarget: { threeStars: 32, twoStars: 44 },
-    },
+    makeLevel(11, "First Stone",
+        {x:1,y:1}, {x:3,y:1}, {x:8,y:4},
+        [[1,2],[2,2],[3,2],[4,2],[6,7],[7,7],[8,5]],
+        [[5,7]]
+    ),
 
-    // LEVEL 15 - Double Gap
-    {
-        level: 15,
-        start: { x: 1, y: 1 },
-        apple: { x: 0, y: 1 },
-        portal: { x: 6, y: 5 },
-        obstacles: [
-            ...platform(2, 0, 2),
-            ...platform(4, 3, 5),
-            ...platform(6, 6, 7),
-            ...platform(5, 0, 1),
-        ],
-        starTarget: { threeStars: 34, twoStars: 46 },
-    },
+    makeLevel(12, "Stone Climber",
+        {x:2,y:1}, {x:4,y:1}, {x:10,y:5},
+        [[2,2],[3,2],[4,2],[8,8],[9,8],[10,6]],
+        [[6,8]]
+    ),
 
-    // LEVEL 16 - Multi-Level Platforms
-    {
-        level: 16,
-        start: { x: 2, y: 2 },
-        apple: { x: 1, y: 2 },
-        portal: { x: 6, y: 6 },
-        obstacles: [
-            ...platform(3, 0, 2),
-            ...platform(5, 3, 5),
-            ...platform(7, 6, 7),
-            ...platform(4, 6, 7),
-            ...platform(6, 0, 1),
-        ],
-        starTarget: { threeStars: 35, twoStars: 48 },
-    },
+    makeLevel(13, "Push the Block",
+        {x:1,y:2}, {x:3,y:2}, {x:12,y:7},
+        [[1,3],[2,3],[3,3],[7,8],[8,8],[9,8],[12,8]],
+        [[5,8]]
+    ),
 
-    // LEVEL 17 - Tricky Route
-    {
-        level: 17,
-        start: { x: 1, y: 3 },
-        apple: { x: 0, y: 3 },
-        portal: { x: 6, y: 3 },
-        obstacles: [
-            ...platform(4, 0, 1),
-            ...platform(2, 2, 4),
-            ...platform(5, 5, 7),
-            ...platform(7, 2, 5),
-            ...platform(6, 0, 1),
-        ],
-        starTarget: { threeStars: 37, twoStars: 50 },
-    },
+    makeLevel(14, "Stone Steps",
+        {x:2,y:1}, {x:5,y:1}, {x:12,y:5},
+        [[2,2],[3,2],[4,2],[5,2],[9,8],[10,7],[11,6],[12,6]],
+        [[7,8]]
+    ),
 
-    // LEVEL 18 - Multiple Gaps
-    {
-        level: 18,
-        start: { x: 2, y: 1 },
-        apple: { x: 1, y: 1 },
-        portal: { x: 6, y: 5 },
-        obstacles: [
-            ...platform(2, 0, 3),
-            ...platform(4, 4, 7),
-            ...platform(6, 1, 3),
-            ...platform(6, 5, 7),
-            ...platform(7, 0, 0),
-        ],
-        starTarget: { threeStars: 39, twoStars: 52 },
-    },
+    makeLevel(15, "Heavy Lift",
+        {x:1,y:1}, {x:4,y:1}, {x:13,y:6},
+        [[1,2],[2,2],[3,2],[4,2],[8,8],[9,8],[10,8],[13,7]],
+        [[6,8],[7,8]]
+    ),
 
-    // LEVEL 19 - Expert Puzzle
-    {
-        level: 19,
-        start: { x: 1, y: 2 },
-        apple: { x: 0, y: 2 },
-        portal: { x: 6, y: 4 },
-        obstacles: [
-            ...platform(3, 0, 2),
-            ...platform(5, 3, 5),
-            ...platform(3, 6, 7),
-            ...platform(7, 0, 3),
-            ...platform(6, 5, 7),
-        ],
-        starTarget: { threeStars: 41, twoStars: 55 },
-    },
+    makeLevel(16, "Stone Wall",
+        {x:2,y:2}, {x:5,y:2}, {x:13,y:7},
+        [[2,3],[3,3],[4,3],[5,3],[10,9],[11,9],[12,9],[13,8]],
+        [[7,9],[8,9]]
+    ),
 
-    // LEVEL 20 - Ultimate Challenge
-    {
-        level: 20,
-        start: { x: 1, y: 3 },
-        apple: { x: 0, y: 3 },
-        portal: { x: 6, y: 3 },
-        obstacles: [
-            ...platform(4, 0, 2),
-            ...platform(2, 3, 5),
-            ...platform(5, 5, 7),
-            ...platform(7, 0, 3),
-            ...platform(6, 6, 7),
-            ...platform(1, 4, 7),
-        ],
-        starTarget: { threeStars: 45, twoStars: 60 },
-    },
+    makeLevel(17, "Falling Rock",
+        {x:1,y:1}, {x:3,y:1}, {x:11,y:6},
+        [[1,2],[2,2],[3,2],[5,9],[6,9],[7,9],[11,7]],
+        [[5,7],[8,9]]
+    ),
 
-    // LEVEL 21 - Floating Stone Bridge
-    {
-        level: 21,
-        start: { x: 1, y: 1 },
-        apple: { x: 0, y: 1 },
-        portal: { x: 6, y: 6 },
-        obstacles: [
-            ...platform(2, 0, 2),
-            ...platform(4, 3, 3),
-            ...platform(3, 4, 5),
-            ...platform(5, 6, 7),
-            ...platform(7, 5, 7),
-            ...platform(5, 1, 2),
-        ],
-        starTarget: { threeStars: 45, twoStars: 58 },
-    },
+    makeLevel(18, "Stone Tunnel",
+        {x:2,y:1}, {x:4,y:1}, {x:13,y:8},
+        [[2,2],[3,2],[4,2],[7,5],[8,5],[9,5],[10,5],[13,9]],
+        [[6,8],[11,8]]
+    ),
 
-    // LEVEL 22 - Broken Stone Path
-    {
-        level: 22,
-        start: { x: 2, y: 1 },
-        apple: { x: 1, y: 1 },
-        portal: { x: 6, y: 6 },
-        obstacles: [
-            ...platform(2, 1, 3),
-            ...platform(4, 4, 4),
-            ...platform(3, 5, 6),
-            ...platform(5, 1, 2),
-            ...platform(6, 3, 4),
-            ...platform(7, 6, 7),
-        ],
-        starTarget: { threeStars: 48, twoStars: 62 },
-    },
+    makeLevel(19, "Double Push",
+        {x:1,y:2}, {x:4,y:2}, {x:13,y:6},
+        [[1,3],[2,3],[3,3],[4,3],[8,9],[9,9],[10,9],[13,7]],
+        [[6,9],[7,9]]
+    ),
 
-    // LEVEL 23 - High and Low Stones
-    {
-        level: 23,
-        start: { x: 1, y: 2 },
-        apple: { x: 0, y: 2 },
-        portal: { x: 7, y: 5 },
-        obstacles: [
-            ...platform(3, 0, 2),
-            ...platform(5, 3, 3),
-            ...platform(4, 4, 5),
-            ...platform(2, 5, 6),
-            ...platform(6, 6, 6),
-            ...platform(7, 5, 7),
-        ],
-        starTarget: { threeStars: 50, twoStars: 65 },
-    },
+    makeLevel(20, "Stone Escape",
+        {x:2,y:1}, {x:5,y:1}, {x:14,y:8},
+        [[2,2],[3,2],[4,2],[5,2],[10,6],[11,6],[12,6],[14,9]],
+        [[7,8],[8,8],[9,8]]
+    ),
 
-    // LEVEL 24 - Zigzag Stone Bridge
-    {
-        level: 24,
-        start: { x: 2, y: 1 },
-        apple: { x: 1, y: 1 },
-        portal: { x: 6, y: 5 },
-        obstacles: [
-            ...platform(2, 1, 3),
-            ...platform(4, 4, 5),
-            ...platform(3, 6, 6),
-            ...platform(5, 1, 2),
-            ...platform(7, 0, 2),
-            ...platform(6, 5, 7),
-        ],
-        starTarget: { threeStars: 52, twoStars: 68 },
-    },
+    // =========================
+    // LEVEL 21–30: HARD STONE PUZZLES
+    // =========================
 
-    // LEVEL 25 - Floating Island Challenge
-    {
-        level: 25,
-        start: { x: 1, y: 3 },
-        apple: { x: 0, y: 3 },
-        portal: { x: 6, y: 1 },
-        obstacles: [
-            ...platform(4, 0, 2),
-            ...platform(6, 3, 3),
-            ...platform(5, 4, 5),
-            ...platform(3, 6, 7),
-            ...platform(2, 3, 4),
-            ...platform(7, 5, 7),
-        ],
-        starTarget: { threeStars: 54, twoStars: 70 },
-    },
+    makeLevel(21, "Triple Stones",
+        {x:1,y:1}, {x:4,y:1}, {x:13,y:7},
+        [[1,2],[2,2],[3,2],[4,2],[10,9],[11,9],[12,9],[13,8]],
+        [[6,9],[7,9],[8,9]]
+    ),
 
-    // LEVEL 26 - Narrow Stone Route
-    {
-        level: 26,
-        start: { x: 2, y: 2 },
-        apple: { x: 1, y: 2 },
-        portal: { x: 7, y: 5 },
-        obstacles: [
-            ...platform(3, 1, 3),
-            ...platform(5, 4, 4),
-            ...platform(4, 5, 6),
-            ...platform(6, 7, 7),
-            ...platform(7, 4, 6),
-            ...platform(1, 5, 6),
-        ],
-        starTarget: { threeStars: 56, twoStars: 73 },
-    },
+    makeLevel(22, "Narrow Passage",
+        {x:2,y:2}, {x:5,y:2}, {x:13,y:8},
+        [[2,3],[3,3],[4,3],[5,3],[7,5],[8,5],[9,5],[13,9]],
+        [[6,8],[10,8]]
+    ),
 
-    // LEVEL 27 - Double Floating Bridge
-    {
-        level: 27,
-        start: { x: 1, y: 1 },
-        apple: { x: 0, y: 1 },
-        portal: { x: 6, y: 6 },
-        obstacles: [
-            ...platform(2, 0, 2),
-            ...platform(4, 3, 4),
-            ...platform(3, 5, 5),
-            ...platform(5, 6, 7),
-            ...platform(7, 3, 5),
-            ...platform(6, 0, 1),
-        ],
-        starTarget: { threeStars: 58, twoStars: 76 },
-    },
+    makeLevel(23, "Stone Pyramid",
+        {x:1,y:1}, {x:3,y:1}, {x:12,y:5},
+        [[1,2],[2,2],[3,2],[8,9],[9,9],[10,9],[11,9],[12,6]],
+        [[7,9],[8,8],[9,8]]
+    ),
 
-    // LEVEL 28 - Stepping Stone Maze
-    {
-        level: 28,
-        start: { x: 2, y: 1 },
-        apple: { x: 1, y: 1 },
-        portal: { x: 7, y: 4 },
-        obstacles: [
-            ...platform(2, 1, 3),
-            ...platform(4, 4, 4),
-            ...platform(3, 5, 6),
-            ...platform(5, 7, 7),
-            ...platform(6, 2, 3),
-            ...platform(7, 5, 7),
-            ...platform(5, 0, 1),
-        ],
-        starTarget: { threeStars: 60, twoStars: 78 },
-    },
+    makeLevel(24, "Double Tower",
+        {x:2,y:1}, {x:5,y:1}, {x:14,y:7},
+        [[2,2],[3,2],[4,2],[5,2],[7,7],[8,7],[11,7],[12,7],[14,8]],
+        [[6,9],[9,9],[10,9]]
+    ),
 
-    // LEVEL 29 - Extreme Gap Challenge
-    {
-        level: 29,
-        start: { x: 1, y: 2 },
-        apple: { x: 0, y: 2 },
-        portal: { x: 5, y: 5 },
-        obstacles: [
-            ...platform(3, 0, 2),
-            ...platform(5, 3, 3),
-            ...platform(4, 4, 5),
-            ...platform(2, 5, 7),
-            ...platform(6, 6, 7),
-            ...platform(7, 3, 5),
-            ...platform(5, 0, 1),
-        ],
-        starTarget: { threeStars: 62, twoStars: 82 },
-    },
+    makeLevel(25, "The Maze",
+        {x:1,y:2}, {x:4,y:2}, {x:14,y:8},
+        [[1,3],[2,3],[3,3],[4,3],[6,5],[7,5],[8,5],[9,7],[10,7],[11,7],[14,9]],
+        [[5,9],[8,9],[12,9]]
+    ),
 
-    // LEVEL 30 - Ultimate Stone Puzzle
-    {
-        level: 30,
-        start: { x: 2, y: 1 },
-        apple: { x: 1, y: 1 },
-        portal: { x: 6, y: 6 },
-        obstacles: [
-            ...platform(2, 1, 3),
-            ...platform(4, 4, 4),
-            ...platform(3, 5, 6),
-            ...platform(5, 7, 7),
-            ...platform(6, 4, 5),
-            ...platform(7, 1, 3),
-            ...platform(5, 1, 2),
-            ...platform(1, 5, 6),
-        ],
-        starTarget: { threeStars: 65, twoStars: 85 },
-    },
+    makeLevel(26, "Stone Bridge",
+        {x:2,y:1}, {x:5,y:1}, {x:13,y:5},
+        [[2,2],[3,2],[4,2],[5,2],[8,7],[9,7],[10,7],[11,7],[13,6]],
+        [[6,7],[7,7]]
+    ),
 
+    makeLevel(27, "The Crusher",
+        {x:1,y:1}, {x:3,y:1}, {x:13,y:8},
+        [[1,2],[2,2],[3,2],[5,6],[6,6],[7,6],[10,9],[11,9],[12,9],[13,9]],
+        [[8,9],[9,9]]
+    ),
+
+    makeLevel(28, "Stacked Blocks",
+        {x:2,y:2}, {x:5,y:2}, {x:14,y:6},
+        [[2,3],[3,3],[4,3],[5,3],[8,8],[9,8],[10,8],[14,7]],
+        [[6,8],[7,8],[11,8],[12,8]]
+    ),
+
+    makeLevel(29, "Rock Valley",
+        {x:1,y:1}, {x:4,y:1}, {x:13,y:7},
+        [[1,2],[2,2],[3,2],[4,2],[6,9],[7,9],[8,9],[9,9],[13,8]],
+        [[5,9],[10,9],[11,9]]
+    ),
+
+    makeLevel(30, "Master of Stones",
+        {x:2,y:1}, {x:5,y:1}, {x:14,y:8},
+        [[2,2],[3,2],[4,2],[5,2],[7,6],[8,6],[9,6],[11,9],[12,9],[13,9],[14,9]],
+        [[6,9],[10,9]]
+    ),
+
+    // =========================
+    // LEVEL 31–40: THORNS + STONES
+    // =========================
+
+    makeLevel(31, "Thorn Bridge",
+        {x:1,y:1}, {x:3,y:1}, {x:13,y:7},
+        [[1,2],[2,2],[3,2],[4,2],[9,9],[10,9],[11,9],[13,8]],
+        [[7,9]],
+        [[5,9],[6,9],[8,9]]
+    ),
+
+    makeLevel(32, "Thorn Staircase",
+        {x:2,y:1}, {x:4,y:1}, {x:13,y:6},
+        [[2,2],[3,2],[4,2],[7,8],[8,7],[9,6],[10,6],[13,7]],
+        [[6,9]],
+        [[5,9],[11,9]]
+    ),
+
+    makeLevel(33, "Thorn Tunnel",
+        {x:1,y:2}, {x:4,y:2}, {x:14,y:8},
+        [[1,3],[2,3],[3,3],[4,3],[8,6],[9,6],[10,6],[14,9]],
+        [[6,9],[7,9]],
+        [[5,9],[11,9],[12,9]]
+    ),
+
+    makeLevel(34, "Thorn Pyramid",
+        {x:2,y:1}, {x:5,y:1}, {x:13,y:5},
+        [[2,2],[3,2],[4,2],[5,2],[8,9],[9,9],[10,9],[11,9],[13,6]],
+        [[6,9],[7,9]],
+        [[5,9],[12,9]]
+    ),
+
+    makeLevel(35, "Thorn Crossroads",
+        {x:1,y:1}, {x:3,y:1}, {x:14,y:7},
+        [[1,2],[2,2],[3,2],[6,6],[7,6],[8,6],[11,8],[12,8],[13,8],[14,8]],
+        [[9,9],[10,9]],
+        [[4,6],[5,6],[9,6],[10,6]]
+    ),
+
+    makeLevel(36, "Thorn Spiral",
+        {x:2,y:2}, {x:5,y:2}, {x:13,y:8},
+        [[2,3],[3,3],[4,3],[5,3],[7,5],[8,5],[10,7],[11,7],[13,9]],
+        [[6,8],[9,9]],
+        [[6,5],[9,5],[12,7]]
+    ),
+
+    makeLevel(37, "Thorn Zigzag",
+        {x:1,y:1}, {x:4,y:1}, {x:14,y:6},
+        [[1,2],[2,2],[3,2],[4,2],[6,7],[7,6],[8,5],[9,6],[10,7],[14,7]],
+        [[5,9],[11,9]],
+        [[5,7],[8,7],[12,9]]
+    ),
+
+    makeLevel(38, "Thorn Fortress",
+        {x:2,y:1}, {x:5,y:1}, {x:14,y:8},
+        [[2,2],[3,2],[4,2],[5,2],[8,5],[9,5],[10,5],[11,5],[14,9]],
+        [[6,9],[7,9],[12,9]],
+        [[7,5],[12,5],[13,5]]
+    ),
+
+    makeLevel(39, "Thorn Valley",
+        {x:1,y:2}, {x:4,y:2}, {x:13,y:7},
+        [[1,3],[2,3],[3,3],[4,3],[7,9],[8,9],[9,9],[10,9],[13,8]],
+        [[5,9],[6,9],[11,9]],
+        [[4,9],[9,8],[12,9]]
+    ),
+
+    makeLevel(40, "Thorn Labyrinth",
+        {x:2,y:1}, {x:5,y:1}, {x:14,y:8},
+        [[2,2],[3,2],[4,2],[5,2],[7,5],[8,5],[9,5],[11,7],[12,7],[14,9]],
+        [[6,9],[10,9],[13,9]],
+        [[6,5],[10,5],[13,7]]
+    ),
+
+    // =========================
+    // LEVEL 41–50: ADVANCED PUZZLES
+    // =========================
+
+    makeLevel(41, "The Final Climb",
+        {x:1,y:1}, {x:4,y:1}, {x:14,y:4},
+        [[1,2],[2,2],[3,2],[4,2],[8,9],[9,9],[10,9],[11,7],[12,6],[13,5],[14,5]],
+        [[5,9],[6,9],[7,9]],
+        [[8,7],[9,7],[10,7]]
+    ),
+
+    makeLevel(42, "Moving Mountain",
+        {x:2,y:2}, {x:5,y:2}, {x:14,y:7},
+        [[2,3],[3,3],[4,3],[5,3],[8,8],[9,8],[10,8],[11,8],[14,8]],
+        [[6,8],[7,8],[12,8]],
+        [[5,8],[10,6],[13,8]]
+    ),
+
+    makeLevel(43, "The Last Bridge",
+        {x:1,y:1}, {x:3,y:1}, {x:14,y:6},
+        [[1,2],[2,2],[3,2],[5,7],[6,7],[7,7],[10,5],[11,5],[12,5],[14,7]],
+        [[4,9],[8,9],[9,9]],
+        [[6,5],[7,5],[8,5],[9,5]]
+    ),
+
+    makeLevel(44, "Double Danger",
+        {x:2,y:1}, {x:5,y:1}, {x:14,y:8},
+        [[2,2],[3,2],[4,2],[5,2],[8,6],[9,6],[10,6],[11,6],[14,9]],
+        [[6,9],[7,9],[12,9]],
+        [[5,6],[7,6],[12,6],[13,6]]
+    ),
+
+    makeLevel(45, "The Winding Road",
+        {x:1,y:2}, {x:4,y:2}, {x:14,y:5},
+        [[1,3],[2,3],[3,3],[4,3],[6,8],[7,7],[8,6],[9,5],[10,5],[14,6]],
+        [[5,9],[11,9],[12,9]],
+        [[5,7],[10,7],[13,9]]
+    ),
+
+    makeLevel(46, "Stone and Spikes",
+        {x:2,y:1}, {x:5,y:1}, {x:14,y:7},
+        [[2,2],[3,2],[4,2],[5,2],[8,9],[9,9],[10,9],[11,9],[14,8]],
+        [[6,9],[7,9],[12,9]],
+        [[5,9],[8,7],[10,7],[13,9]]
+    ),
+
+    makeLevel(47, "The Hidden Route",
+        {x:1,y:1}, {x:4,y:1}, {x:14,y:8},
+        [[1,2],[2,2],[3,2],[4,2],[7,5],[8,5],[9,5],[10,8],[11,8],[12,8],[14,9]],
+        [[5,9],[6,9],[9,9],[13,9]],
+        [[6,5],[11,6],[12,6]]
+    ),
+
+    makeLevel(48, "Impossible Looking",
+        {x:2,y:2}, {x:5,y:2}, {x:14,y:5},
+        [[2,3],[3,3],[4,3],[5,3],[7,8],[8,8],[9,8],[10,8],[11,6],[12,5],[13,5],[14,6]],
+        [[6,8],[9,6],[10,6]],
+        [[6,6],[8,6],[12,7],[13,7]]
+    ),
+
+    makeLevel(49, "Ultimate Challenge",
+        {x:1,y:1}, {x:4,y:1}, {x:14,y:7},
+        [[1,2],[2,2],[3,2],[4,2],[7,5],[8,5],[9,5],[11,8],[12,8],[13,8],[14,8]],
+        [[5,9],[6,9],[9,9],[10,9]],
+        [[5,5],[6,5],[10,5],[11,6],[12,6]]
+    ),
+
+    makeLevel(50, "Apple Worm Master",
+        {x:2,y:1}, {x:5,y:1}, {x:14,y:5},
+        [[2,2],[3,2],[4,2],[5,2],[7,8],[9,9],[10,9],[11,7],[12,6],[13,6],[14,6]],
+        [[6,9],[7,9],[10,7],[11,9]],
+        [[6,6],[7,6],[8,6],[12,8],[12,7]]
+    ),
 ];
 
 export default levels;

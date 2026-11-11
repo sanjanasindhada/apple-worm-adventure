@@ -844,3 +844,9 @@ button {
         transform: scale(1);
     }
 }
+.admin-mode {
+    min-height: 100vh;
+    width: 100%;
+    background: #f4f6fb !important;
+    background-image: none !important;
+}

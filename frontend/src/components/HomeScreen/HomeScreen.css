@@ -58,3 +58,17 @@
         font-size: 16px;
     }
 }
+.admin-button {
+    margin-top: 15px;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 10px;
+    background: #216869;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.admin-button:hover {
+    background: #1F2421;
+}

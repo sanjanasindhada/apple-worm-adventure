@@ -7,7 +7,7 @@ import GameBoard from './components/GameBoard';
 import GameControls from './components/GameControls';
 import HomeScreen from './components/HomeScreen/HomeScreen';
 import LevelSelection from './components/LevelSelection/LevelSelection';
-
+import AdminDashboard from './components/AdminDashboard/AdminDashboard';
 import levels from './data/Levels';
 
 import {
@@ -15,11 +15,19 @@ import {
     playClickSound
 } from "./utils/playSounds";
 
+const API_BASE_URL = "http://localhost:5000/api";
+
 function App() {
 
     const bgMusicRef = useRef(null);
+    const playerInitRef = useRef(false);
+
+    const [playerId, setPlayerId] = useState(
+        localStorage.getItem("appleWormPlayerId")
+    );
 
     const startBgMusic = () => {
+
         if (!bgMusicRef.current) {
             bgMusicRef.current = new Audio("/sounds/bg.mp3");
             bgMusicRef.current.loop = true;
@@ -31,32 +39,162 @@ function App() {
         });
     };
 
+    // CREATE PLAYER OR LOAD EXISTING PLAYER
     useEffect(() => {
+
+        if (playerInitRef.current) return;
+
+        playerInitRef.current = true;
+
+        const initializePlayer = async () => {
+
+            try {
+
+                let savedPlayerId = localStorage.getItem(
+                    "appleWormPlayerId"
+                );
+
+                if (savedPlayerId) {
+
+                    try {
+
+                        const response = await fetch(
+                            `${API_BASE_URL}/progress/${savedPlayerId}`
+                        );
+
+                        const data = await response.json();
+
+                        if (!response.ok || !data.success) {
+                            throw new Error("Existing player not found");
+                        }
+
+                        setPlayerId(savedPlayerId);
+
+                        const highestUnlocked =
+                            data.progress?.highestUnlockedLevel || 1;
+
+                        setUnlockedLevels(
+                            Math.max(
+                                1,
+                                Math.min(highestUnlocked, levels.length)
+                            )
+                        );
+
+                        console.log("Player progress loaded:", data);
+
+                        return;
+
+                    } catch (error) {
+
+                        console.log("Creating a new player...");
+
+                        localStorage.removeItem("appleWormPlayerId");
+                        savedPlayerId = null;
+                    }
+                }
+
+                if (!savedPlayerId) {
+
+                    const response = await fetch(
+                        `${API_BASE_URL}/players`,
+                        {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({
+                                playerName: "Player"
+                            })
+                        }
+                    );
+
+                    const data = await response.json();
+
+                    if (!response.ok || !data.success) {
+                        throw new Error(
+                            data.message || "Player creation failed"
+                        );
+                    }
+
+                    const newPlayerId = data.player.playerId;
+
+                    localStorage.setItem(
+                        "appleWormPlayerId",
+                        newPlayerId
+                    );
+
+                    setPlayerId(newPlayerId);
+
+                    setUnlockedLevels(
+                        Math.max(
+                            1,
+                            Math.min(
+                                data.progress?.highestUnlockedLevel || 1,
+                                levels.length
+                            )
+                        )
+                    );
+
+                    console.log("New player created:", data);
+                }
+
+            } catch (error) {
+
+                console.error("Player initialization error:", error);
+
+                alert(
+                    "Backend connection failed. Please start the backend server and refresh the game."
+                );
+            }
+        };
+
+        initializePlayer();
+
+    }, []);
+
+    // BACKGROUND MUSIC CLEANUP
+    useEffect(() => {
+
         return () => {
+
             if (bgMusicRef.current) {
                 bgMusicRef.current.pause();
                 bgMusicRef.current = null;
             }
+
         };
+
     }, []);
 
     const [currentLevel, setCurrentLevel] = useState(0);
 
-    const levelData = levels[currentLevel];
+    const safeLevelIndex = Math.min(
+        Math.max(currentLevel, 0),
+        levels.length - 1
+    );
+
+    const levelData = levels[safeLevelIndex];
+
+    const rows = levelData?.rows || 8;
+    const columns = levelData?.columns || 8;
 
     const initialWorm = [
         levelData.start,
-        { x: levelData.start.x + 1, y: levelData.start.y }
+        {
+            x: levelData.start.x + 1,
+            y: levelData.start.y
+        }
     ];
 
     const [worm, setWorm] = useState(initialWorm);
+    const [stones, setStones] = useState(levelData.stones || []);
     const [apple, setApple] = useState(levelData.apple);
 
     const [score, setScore] = useState(0);
     const [gameOver, setGameOver] = useState(false);
 
     const [appleCollected, setAppleCollected] = useState(false);
-    const [, setLevelComplete] = useState(false);
+    const [levelComplete, setLevelComplete] = useState(false);
 
     const [wormSize, setWormSize] = useState(1);
 
@@ -64,7 +202,7 @@ function App() {
 
     const [screen, setScreen] = useState("home");
 
-    const [, setMovesLeft] = useState(null);
+    const [movesLeft, setMovesLeft] = useState(null);
 
     const [portalEntering, setPortalEntering] = useState(false);
 
@@ -74,16 +212,23 @@ function App() {
 
     const [unlockedLevels, setUnlockedLevels] = useState(1);
 
-    // Falling state
+    // FALLING STATE
     const [falling, setFalling] = useState(false);
     const [fallDistance, setFallDistance] = useState(0);
     const [fallingWorm, setFallingWorm] = useState(null);
     const [showGameOver, setShowGameOver] = useState(false);
+
+    // RESET LEVEL
     const resetLevel = (selectedLevel) => {
+
         setWorm([
             selectedLevel.start,
-            { x: selectedLevel.start.x + 1, y: selectedLevel.start.y }
+            {
+                x: selectedLevel.start.x + 1,
+                y: selectedLevel.start.y
+            }
         ]);
+
         setApple(selectedLevel.apple);
 
         setScore(0);
@@ -104,9 +249,15 @@ function App() {
         setFallingWorm(null);
 
         setEarnedStars(0);
+
+        setStones(selectedLevel.stones || []);
     };
+
+    // GAME OVER ANIMATION
     useEffect(() => {
+
         if (gameOver) {
+
             setShowGameOver(false);
 
             const timer = setTimeout(() => {
@@ -114,24 +265,61 @@ function App() {
             }, 1000);
 
             return () => clearTimeout(timer);
+
         } else {
+
             setShowGameOver(false);
         }
+
     }, [gameOver]);
-    const selectLevel = (index) => {
+
+    // SELECT LEVEL
+    const selectLevel = async (index) => {
+
         const selectedLevel = levels[index];
 
+        if (index >= unlockedLevels) {
+            return;
+        }
+
         setCurrentLevel(index);
+
         resetLevel(selectedLevel);
 
         setScreen("game");
+
+        if (playerId) {
+
+            try {
+
+                const response = await fetch(
+                    `${API_BASE_URL}/progress/${playerId}`,
+                    {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            currentLevel: selectedLevel.level
+                        })
+                    }
+                );
+
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    console.log("Progress update:", data.message);
+                }
+
+            } catch (error) {
+
+                console.error("Progress update failed:", error);
+            }
+        }
     };
 
-    const goToNextLevel = () => {
-
-        setUnlockedLevels(prev =>
-            Math.max(prev, currentLevel + 2)
-        );
+    // COMPLETE LEVEL AND SAVE IN BACKEND
+    const goToNextLevel = async () => {
 
         const target = levelData.starTarget;
 
@@ -143,36 +331,113 @@ function App() {
             stars = 2;
         }
 
-        setEarnedStars(stars);
+        if (!playerId) {
 
-        if (currentLevel < levels.length - 1) {
-            playSound("win");
+            alert("Player data is not ready. Please refresh the game.");
+            return;
+        }
+
+        try {
+
+            const response = await fetch(
+                `${API_BASE_URL}/progress/${playerId}/complete-level`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+
+                        level: levelData.level,
+
+                        score: score,
+
+                        applesCollected: score,
+
+                        stars: stars
+
+                    })
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+
+                throw new Error(
+                    data.message || "Level progress could not be saved"
+                );
+            }
+
+            const highestUnlocked =
+                data.progress.highestUnlockedLevel || 1;
+
+            setUnlockedLevels(
+                Math.max(
+                    1,
+                    Math.min(highestUnlocked, levels.length)
+                )
+            );
+
+            setEarnedStars(stars);
 
             setShowNextLevelPrompt(true);
+
             setLevelComplete(true);
+
+            playSound("win");
+
+            console.log("Level completed and saved:", data);
+
+        } catch (error) {
+
+            console.error("Level completion error:", error);
+
+            alert(
+                "Level progress save nahi hua: " + error.message
+            );
         }
     };
 
+    // PLAY NEXT LEVEL
     const playNextLevel = () => {
+
         const nextLevel = currentLevel + 1;
+
+        if (nextLevel >= levels.length) {
+            return;
+        }
 
         const nextLevelData = levels[nextLevel];
 
         setCurrentLevel(nextLevel);
+
         resetLevel(nextLevelData);
     };
 
     return (
-        <>
+
+        <div className={screen === "admin" ? "admin-mode" : "App"}>
+
+            {/* ADMIN DASHBOARD */}
+            {screen === "admin" && (
+                <AdminDashboard
+                    onBack={() => setScreen("home")}
+                />
+            )}
+
+            {/* HOME SCREEN */}
             {screen === "home" && (
                 <HomeScreen
                     onPlay={() => {
                         startBgMusic();
                         setScreen("levels");
                     }}
+                    onAdmin={() => setScreen("admin")}
                 />
             )}
 
+            {/* LEVEL SELECTION */}
             {screen === "levels" && (
                 <LevelSelection
                     levels={levels}
@@ -182,10 +447,9 @@ function App() {
                 />
             )}
 
+            {/* GAME SCREEN */}
             {screen === "game" && (
                 <div className="game-container">
-
-                    {/* GAME CONTENT - Hide when game over */}
 
                     {!gameOver && (
                         <>
@@ -225,18 +489,20 @@ function App() {
                                         You completed the level in {moves} moves!
                                     </p>
 
-                                    <p>Ready for the next challenge?</p>
-
                                     {currentLevel < levels.length - 1 ? (
-                                        <button
-                                            className="big-play-btn"
-                                            onClick={() => {
-                                                playNextLevel();
-                                                playClickSound();
-                                            }}
-                                        >
-                                            ▶ PLAY LEVEL {levelData.level + 1}
-                                        </button>
+                                        <>
+                                            <p>Ready for the next challenge?</p>
+
+                                            <button
+                                                className="big-play-btn"
+                                                onClick={() => {
+                                                    playNextLevel();
+                                                    playClickSound();
+                                                }}
+                                            >
+                                                ▶ PLAY LEVEL {levelData.level + 1}
+                                            </button>
+                                        </>
                                     ) : (
                                         <h2>🏆 All Levels Completed!</h2>
                                     )}
@@ -248,10 +514,14 @@ function App() {
                                 <div className="game-layout">
 
                                     <GameBoard
+                                        rows={rows}
+                                        columns={columns}
                                         worm={worm}
                                         apple={apple}
                                         portal={levelData.portal}
-                                        obstacles={levelData.obstacles}
+                                        obstacles={levelData.obstacles || []}
+                                        stones={stones}
+                                        thorns={levelData.thorns || []}
                                         appleCollected={appleCollected}
                                         wormSize={wormSize}
                                         portalEntering={portalEntering}
@@ -263,6 +533,8 @@ function App() {
                                     <div className="side-controls">
 
                                         <GameControls
+                                            rows={rows}
+                                            columns={columns}
                                             setMoves={setMoves}
                                             setLevelComplete={setLevelComplete}
                                             setScore={setScore}
@@ -277,7 +549,8 @@ function App() {
                                             setGameOver={setGameOver}
                                             appleCollected={appleCollected}
                                             setAppleCollected={setAppleCollected}
-                                            obstacles={levelData.obstacles}
+                                            obstacles={levelData.obstacles || []}
+                                            thorns={levelData.thorns || []}
                                             setWormSize={setWormSize}
                                             goToNextLevel={goToNextLevel}
                                             setPortalEntering={setPortalEntering}
@@ -288,6 +561,9 @@ function App() {
                                             setFallDistance={setFallDistance}
                                             fallingWorm={fallingWorm}
                                             setFallingWorm={setFallingWorm}
+                                            stones={stones}
+                                            setStones={setStones}
+                                            initialStones={levelData.stones || []}
                                         />
 
                                     </div>
@@ -296,8 +572,6 @@ function App() {
 
                         </>
                     )}
-
-                    {/* GAME OVER SCREEN */}
 
                     {showGameOver && (
                         <div className="game-over-overlay">
@@ -331,7 +605,8 @@ function App() {
 
                 </div>
             )}
-        </>
+
+        </div>
     );
 }
 
