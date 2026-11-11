@@ -201,7 +201,6 @@ function App() {
 
     const [screen, setScreen] = useState("home");
 
-
     const [portalEntering, setPortalEntering] = useState(false);
 
     const [moves, setMoves] = useState(0);
@@ -209,6 +208,10 @@ function App() {
     const [earnedStars, setEarnedStars] = useState(0);
 
     const [unlockedLevels, setUnlockedLevels] = useState(1);
+
+    // LEVEL COMPLETE AND MOVES LEFT STATE
+    const [levelComplete, setLevelComplete] = useState(false);
+    const [movesLeft, setMovesLeft] = useState(null);
 
     // FALLING STATE
     const [falling, setFalling] = useState(false);
@@ -562,6 +565,8 @@ function App() {
                                             stones={stones}
                                             setStones={setStones}
                                             initialStones={levelData.stones || []}
+                                            movesLeft={movesLeft}
+                                            setMovesLeft={setMovesLeft}
                                         />
 
                                     </div>
