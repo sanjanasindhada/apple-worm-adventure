@@ -33,7 +33,21 @@ app.use(cors({
 }));
 
 app.use(express.json({ limit: "10kb" }));
+
 app.use(express.urlencoded({ extended: true }));
+// Connect MongoDB before handling requests
+app.use(async (req, res, next) => {
+    try {
+        await connectDB();
+        next();
+    } catch (error) {
+        console.error("Database Error:", error.message);
+        res.status(500).json({
+            success: false,
+            message: "Database connection failed"
+        });
+    }
+});
 // Home Route
 app.get("/", (req, res) => {
     res.json({
@@ -69,29 +83,4 @@ app.use("/api/history", historyRoutes);
 // Error Handling
 app.use(notFound);
 app.use(errorHandler);
-
-// Start Server
-const PORT = process.env.PORT || 5000;
-
-const startServer = async () => {
-    try {
-        await connectDB();
-
-        app.listen(PORT, () => {
-            console.log(`Server running on port ${PORT}`);
-        });
-    } catch (error) {
-        console.error("Server startup failed:", error.message);
-        process.exit(1);
-    }
-};
-
-startServer();
-
-// Graceful Shutdown
-process.on("SIGINT", async () => {
-    console.log("Server shutting down...");
-    await mongoose.connection.close();
-    console.log("MongoDB connection closed.");
-    process.exit(0);
-});
+module.exports = app;
