@@ -210,7 +210,7 @@ function App() {
     const [unlockedLevels, setUnlockedLevels] = useState(1);
 
     // LEVEL COMPLETE AND MOVES LEFT STATE
-    const [levelComplete, setLevelComplete] = useState(false);
+    const [, setLevelComplete] = useState(false);
     const [movesLeft, setMovesLeft] = useState(null);
 
     // FALLING STATE
