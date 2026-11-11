@@ -194,7 +194,6 @@ function App() {
     const [gameOver, setGameOver] = useState(false);
 
     const [appleCollected, setAppleCollected] = useState(false);
-    const [levelComplete, setLevelComplete] = useState(false);
 
     const [wormSize, setWormSize] = useState(1);
 
@@ -202,7 +201,6 @@ function App() {
 
     const [screen, setScreen] = useState("home");
 
-    const [movesLeft, setMovesLeft] = useState(null);
 
     const [portalEntering, setPortalEntering] = useState(false);
 
