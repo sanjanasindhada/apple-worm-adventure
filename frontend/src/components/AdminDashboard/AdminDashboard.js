@@ -6,7 +6,7 @@ import "./AdminDashboard.css";
 // const API_BASE_URL = "https://apple-worm-adventure-backend-12ba7w9yo-sanjanasindhada.vercel.app/api";
 // const API_BASE_URL = "http://localhost:5000/api";
 const API_BASE_URL = "https://apple-worm-adventure-backend.vercel.app/api";
-export default function AdminDashboard({ onBack }) {
+export default function AdminDashboard({ onBack, token }) {
     const [overview, setOverview] = useState(null);
     const [levelStatistics, setLevelStatistics] = useState([]);
 
@@ -17,7 +17,7 @@ export default function AdminDashboard({ onBack }) {
     useEffect(() => {
         const fetchDashboardData = async () => {
             const headers = {
-                "x-admin-key": process.env.REACT_APP_ADMIN_API_KEY
+                Authorization: `Bearer ${token}`
             };
 
             try {
@@ -72,7 +72,7 @@ export default function AdminDashboard({ onBack }) {
         };
 
         fetchDashboardData();
-    }, []);
+    }, [token]);
 
     if (loading) {
         return (

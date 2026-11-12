@@ -8,8 +8,8 @@ import GameControls from './components/GameControls';
 import HomeScreen from './components/HomeScreen/HomeScreen';
 import LevelSelection from './components/LevelSelection/LevelSelection';
 import AdminDashboard from './components/AdminDashboard/AdminDashboard';
+import AdminLogin from './components/AdminLogin';
 import levels from './data/Levels';
-
 import {
     playSound,
     playClickSound
@@ -200,7 +200,8 @@ function App() {
     const [showNextLevelPrompt, setShowNextLevelPrompt] = useState(false);
 
     const [screen, setScreen] = useState("home");
-
+    const [adminToken, setAdminToken] = useState(null);
+console.log("CURRENT SCREEN:", screen);
     const [portalEntering, setPortalEntering] = useState(false);
 
     const [moves, setMoves] = useState(0);
@@ -422,11 +423,20 @@ function App() {
 
             {/* ADMIN DASHBOARD */}
             {screen === "admin" && (
-                <AdminDashboard
-                    onBack={() => setScreen("home")}
-                />
+                adminToken ? (
+                    <AdminDashboard
+                        token={adminToken}
+                        onBack={() => {
+                            setAdminToken(null);
+                            setScreen("home");
+                        }}
+                    />
+                ) : (
+                    <AdminLogin
+                        onLogin={(token) => setAdminToken(token)}
+                    />
+                )
             )}
-
             {/* HOME SCREEN */}
             {screen === "home" && (
                 <HomeScreen
