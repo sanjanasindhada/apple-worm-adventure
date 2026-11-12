@@ -37,7 +37,7 @@ function GameBoard({
                 const x = index % columns;
                 const y = Math.floor(index / columns);
 
-                const displayWorm = worm || [];
+                const displayWorm = portalEntering ? [] : (worm || []);
 
                 const isHead =
                     displayWorm.length > 0 &&
