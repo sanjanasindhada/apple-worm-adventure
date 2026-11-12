@@ -16,7 +16,7 @@ import {
 } from "./utils/playSounds";
 
 // const API_BASE_URL = process.env.REACT_APP_API_URL;
-const API_BASE_URL = "/api";
+const API_BASE_URL = "https://apple-worm-adventure-backend.vercel.app/api";
 function App() {
 
     const bgMusicRef = useRef(null);

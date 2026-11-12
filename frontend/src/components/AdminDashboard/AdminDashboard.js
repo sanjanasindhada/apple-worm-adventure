@@ -5,7 +5,7 @@ import "./AdminDashboard.css";
 // const API_BASE_URL = process.env.REACT_APP_API_URL;
 // const API_BASE_URL = "https://apple-worm-adventure-backend-12ba7w9yo-sanjanasindhada.vercel.app/api";
 // const API_BASE_URL = "http://localhost:5000/api";
-const API_BASE_URL = "/api";
+const API_BASE_URL = "https://apple-worm-adventure-backend.vercel.app/api";
 export default function AdminDashboard({ onBack }) {
     const [overview, setOverview] = useState(null);
     const [levelStatistics, setLevelStatistics] = useState([]);
