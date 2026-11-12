@@ -27,7 +27,8 @@ export default function AdminLogin({ onLogin }) {
                 throw new Error(data.message || "Login failed");
             }
 
-            onLogin(data.token);
+            console.log("LOGIN TOKEN RECEIVED:", !!data.token);
+onLogin(data.token);
         } catch (err) {
             setError(err.message);
         } finally {
