@@ -29,3 +29,5 @@ frontend/.git-old/
 frontend/.git-backup/
 frontend/node_modules/
 backend/node_modules/
+.vercel
+.env*

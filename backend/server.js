@@ -84,3 +84,7 @@ app.use("/api/history", historyRoutes);
 app.use(notFound);
 app.use(errorHandler);
 module.exports = app;
+
+// app.listen(process.env.PORT || 5000, () => {
+//     console.log("Server running on port " + (process.env.PORT || 5000));
+// });
