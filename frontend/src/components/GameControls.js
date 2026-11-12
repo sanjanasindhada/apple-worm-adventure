@@ -535,7 +535,6 @@ function GameControls({
 
                 setTimeout(() => {
                     goToNextLevel();
-                    setPortalEntering(false);
                 }, 1000);
 
                 return;
