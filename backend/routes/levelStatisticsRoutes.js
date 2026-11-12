@@ -7,9 +7,9 @@ const {
     getLevelStatistics
 } = require("../controllers/levelStatisticsController");
 
-const adminAuth = require("../middleware/adminAuth");
+const verifyAdmin = require("../middleware/authMiddleware");
 
 // ADMIN ONLY
-router.get("/", adminAuth, getLevelStatistics);
+router.get("/", verifyAdmin, getLevelStatistics);
 
 module.exports = router;

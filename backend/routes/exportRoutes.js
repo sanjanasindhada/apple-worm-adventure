@@ -7,9 +7,9 @@ const {
     exportPlayersData
 } = require("../controllers/exportController");
 
-const adminAuth = require("../middleware/adminAuth");
+const verifyAdmin = require("../middleware/authMiddleware");
 
 // EXPORT ALL PLAYERS DATA (ADMIN ONLY)
-router.get("/players", adminAuth, exportPlayersData);
+router.get("/players", verifyAdmin, exportPlayersData);
 
 module.exports = router;

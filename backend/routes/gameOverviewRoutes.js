@@ -7,9 +7,9 @@ const {
     getGameOverview
 } = require("../controllers/gameOverviewController");
 
-const adminAuth = require("../middleware/adminAuth");
+const verifyAdmin = require("../middleware/authMiddleware");
 
 // ADMIN ONLY - GAME OVERVIEW
-router.get("/", adminAuth, getGameOverview);
+router.get("/", verifyAdmin, getGameOverview);
 
 module.exports = router;

@@ -18,7 +18,7 @@ const scoreRoutes = require("./routes/scoreRoutes");
 const leaderboardRoutes = require("./routes/leaderboardRoutes");
 const statisticsRoutes = require("./routes/statisticsRoutes");
 const historyRoutes = require("./routes/historyRoutes");
-
+const authRoutes = require("./routes/authRoutes");
 // Import Error Middleware
 const {
     notFound,
@@ -92,7 +92,7 @@ app.use("/api/level-statistics", levelStatisticsRoutes);
 app.use("/api/daily-activity", dailyActivityRoutes);
 app.use("/api/export", exportRoutes);
 app.use("/api/history", historyRoutes);
-
+app.use("/api/auth", authRoutes);
 // Error Handling
 app.use(notFound);
 app.use(errorHandler);

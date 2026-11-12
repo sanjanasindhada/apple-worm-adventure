@@ -7,9 +7,9 @@ const {
     getDailyActivity
 } = require("../controllers/dailyActivityController");
 
-const adminAuth = require("../middleware/adminAuth");
+const verifyAdmin = require("../middleware/authMiddleware");
 
 // ADMIN ONLY
-router.get("/", adminAuth, getDailyActivity);
+router.get("/", verifyAdmin, getDailyActivity);
 
 module.exports = router;
